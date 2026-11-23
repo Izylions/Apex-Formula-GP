@@ -4,8 +4,20 @@ const PERF_CFG={
  mobile:{dprCap:1.25,shadowSize:512,aniso:4,sparks:120,ersP:90,hudMs:80,mmMs:100,crowdWave:false,fxVignette:false},
  desktop:{dprCap:1.5,shadowSize:2048,aniso:16,sparks:400,ersP:300,hudMs:33,mmMs:50,crowdWave:true,fxVignette:true}
 };
-// Phase 3: Cross-Play Multiplayer & Fixed-Timestep Physics Tuning
-const NET_CFG={fixedDt:1/60,maxSubSteps:4,sendHz:20,interpMs:90,maxExtrapMs:120,snapDist:130,pingMs:1500};
+// Phase 3: Cross-Play Multiplayer (STUN + public TURN relay) & Fixed-Timestep Physics Tuning
+const NET_CFG={fixedDt:1/60,maxSubSteps:4,sendHz:20,interpMs:90,maxExtrapMs:120,snapDist:130,pingMs:1500,peerOpts:{
+ debug:1,pingInterval:5000,config:{
+  iceServers:[
+   {urls:'stun:stun.l.google.com:19302'},
+   {urls:'stun:stun1.l.google.com:19302'},
+   {urls:'stun:stun2.l.google.com:19302'},
+   {urls:'stun:stun.cloudflare.com:3478'},
+   {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+   {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
+   {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}
+  ],iceCandidatePoolSize:4
+ }
+}};
 class Sfx{
  init(){try{if(this.A){if(this.A.state==='suspended')this.A.resume().catch(()=>{});return}const A=this.A=new(window.AudioContext||window.webkitAudioContext)(),mk=t=>{const o=A.createOscillator();o.type=t;o.start();return o};
   if(A.state==='suspended')A.resume().catch(()=>{});
@@ -143,12 +155,12 @@ class Car{
 
 class Game{
  constructor(){
-  this.set={ev:.7,sv:.7,mu:false,shadows:true,detail:'high',fov:75,steer:1,line:true,bsz:1.15,dbg:false};this.sel={team:0,tire:'M',track:0,laps:3,mode:0};
+  this.set={ev:.7,sv:.7,mu:false,shadows:true,detail:'high',gfx:'balanced',fov:75,steer:1,line:true,bsz:1.15,dbg:false};this.sel={team:0,tire:'M',track:0,laps:3,mode:0};
   const plat=this.plat=window.APEX_PLATFORM||null;
   const isMob=this.isMob=plat?!!plat.isMobile:('ontouchstart' in window||navigator.maxTouchPoints>0||Math.min(innerWidth,innerHeight)<=600);
   this.view=plat&&plat.defaultCam!=null?plat.defaultCam:1;this.keys={};this.sfx=new Sfx();this.sfx.ev=.7;this.sfx.sv=.7;this.sfx.mode='v8';this.sfx.mus=true;this.state='menu';this.cars=[];this.cam={a:0};this.laps=3;this.msgT=0;this.tick=0;this.acc=0;this.rtt=0;this.netHz=0;this._netCnt=0;this._netSec=0;this._pingT=0;
   const prof=this.prof=(plat&&plat.perf)||PERF_CFG[isMob?'mobile':'desktop'];
-  const R=this.r=new THREE.WebGLRenderer({canvas:$('gl'),antialias:true,powerPreference:'high-performance'});R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;ANISO=Math.max(4,Math.min(prof.aniso,+R.capabilities.getMaxAnisotropy()||4));R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.15;
+  const R=this.r=new THREE.WebGLRenderer({canvas:$('gl'),antialias:true,powerPreference:'high-performance'});R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFShadowMap;ANISO=Math.max(4,Math.min(prof.aniso,+R.capabilities.getMaxAnisotropy()||4));R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.15;
   $('gl').addEventListener('webglcontextlost',e=>{e.preventDefault();this.ctxLost=true;this.msg('GRAPHICS CONTEXT LOST · RESTORING…')},false);
   $('gl').addEventListener('webglcontextrestored',()=>{this.ctxLost=false;this.resize();this.clearFade();this.msg('GRAPHICS RESTORED')},false);
   {const es=new THREE.Scene(),eg=new THREE.SphereGeometry(50,24,16),ep=eg.attributes.position,ec=[],a1=new THREE.Color(0x82b4f2),a2=new THREE.Color(0xf5f8fc),a3=new THREE.Color(0x1b1e24),cc=new THREE.Color();
@@ -165,9 +177,12 @@ class Game{
   const SK=1400,spp=new Float32Array(SK*12).fill(-9999),sI=[];for(let i=0;i<SK;i++)sI.push(i*4,i*4+1,i*4+2,i*4,i*4+2,i*4+3);const sgm=new THREE.BufferGeometry();sgm.setAttribute('position',new THREE.BufferAttribute(spp,3));sgm.setIndex(sI);
   this.skP=spp;this.skI=0;this.skD=false;this.skM=new THREE.Mesh(sgm,new THREE.MeshBasicMaterial({color:0x08080a,transparent:true,opacity:.55,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2,side:THREE.DoubleSide}));this.skM.frustumCulled=false;this.scene.add(this.skM);
   this.comp=null;this.useBloom=false;this.tunK=0;this._v1=new THREE.Vector3();this._v2=new THREE.Vector3();this._hudT=0;this._hs={};
-  const resize=()=>{const w=Math.max(1,(window.visualViewport&&window.visualViewport.width)||innerWidth),h=Math.max(1,(window.visualViewport&&window.visualViewport.height)||innerHeight),cap=this.prof.dprCap;R.setPixelRatio(this.set.detail==='high'?Math.min(devicePixelRatio||1,cap):1);R.setSize(w,h,false);this.camera.aspect=w/h;this.camera.updateProjectionMatrix();if(this.show){this.show.cam.aspect=w/h;this.show.cam.updateProjectionMatrix()}};
+  const resize=()=>{const w=Math.max(1,(window.visualViewport&&window.visualViewport.width)||innerWidth),h=Math.max(1,(window.visualViewport&&window.visualViewport.height)||innerHeight),g=this.set.gfx||'balanced',cap=g==='maxfps'?1:g==='ultra'?Math.min(2,this.prof.dprCap+.25):this.prof.dprCap;R.setPixelRatio(this.set.detail==='high'?Math.min(devicePixelRatio||1,cap):1);R.setSize(w,h,false);this.camera.aspect=w/h;this.camera.updateProjectionMatrix();if(this.show){this.show.cam.aspect=w/h;this.show.cam.updateProjectionMatrix()}};
   this.resize=resize;addEventListener('resize',resize);addEventListener('orientationchange',()=>{setTimeout(resize,120);setTimeout(resize,360)});if(window.visualViewport)window.visualViewport.addEventListener('resize',resize);resize();
-  this.ui();this.loadP();this.syncSet();this.loadTrack(this.sel.track);this.spawnBG();this.makeShow();this.go('main');addEventListener('keydown',e=>this.key(e,1));addEventListener('keyup',e=>this.key(e,0));
+  this.ui();this.loadP();this.syncSet();this.loadTrack(this.sel.track);this.spawnBG();this.makeShow();
+  const joinQ=(new URLSearchParams(location.search).get('join')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);
+  if(joinQ.length===4){this.go('gate');if($('code'))$('code').value=joinQ;$('mps').textContent='Invite code '+joinQ+' ready — press Join'}else this.go('main');
+  addEventListener('keydown',e=>this.key(e,1));addEventListener('keyup',e=>this.key(e,0));
   this.last=performance.now();requestAnimationFrame(t=>this.loop(t));
  }
 ui(){
@@ -194,25 +209,37 @@ ui(){
   $('rp').onclick=()=>this.pickTrack(this.sel.track-1);$('rnx').onclick=()=>this.pickTrack(this.sel.track+1);$('rGo').onclick=()=>this.startSeries();
   $('mp1').onclick=()=>this.pickTrack(this.sel.track-1);$('mp2').onclick=()=>this.pickTrack(this.sel.track+1);$('mOk').onclick=()=>this.toLobby();
   $('gHost').onclick=()=>this.host();$('gJoin').onclick=()=>this.join($('code').value);$('gomp').onclick=()=>this.hostStart();
+  if($('cpLink'))$('cpLink').onclick=()=>{const u=location.origin+location.pathname+'?join='+this.code;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(u).then(()=>{$('cpLink').textContent='✓ Link Copied!';setTimeout(()=>{if($('cpLink'))$('cpLink').textContent='📋 Copy Invite Link'},1800)}).catch(()=>prompt('Share this link:',u))}else prompt('Share this link:',u)};
   $('sx').onclick=()=>this.settings(false);document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));for(const k of'cagh')$('t_'+k).hidden=k!==b.dataset.t});
   const syncTheme=()=>this.sfx.playTheme(this.state==='menu'?'intro':this.state==='done2'?'outro':'off');
   $('s_st').oninput=e=>{S.steer=+e.target.value;$('v_st').textContent=S.steer.toFixed(2);this.saveP()};if($('s_bsz'))$('s_bsz').oninput=e=>{S.bsz=+e.target.value;$('v_bsz').textContent=S.bsz.toFixed(2)+'x';document.documentElement.style.setProperty('--btn-sc',S.bsz);this.saveP()};if($('s_dbg'))$('s_dbg').onchange=e=>{S.dbg=e.target.checked;if($('netDbg'))$('netDbg').classList.toggle('on',!!S.dbg);this.saveP()};$('s_ev').oninput=e=>{this.sfx.ev=+e.target.value;this.saveP()};$('s_sv').oninput=e=>{this.sfx.sv=+e.target.value;syncTheme();this.saveP()};if($('s_mus'))$('s_mus').onchange=e=>{this.sfx.mus=e.target.checked;syncTheme();this.saveP()};$('s_mu').onchange=e=>{this.sfx.mu=e.target.checked;syncTheme();this.saveP()};
   $('s_sh').onchange=e=>{S.shadows=e.target.checked;this.r.shadowMap.enabled=S.shadows;this.sun.castShadow=S.shadows;this.scene.traverse(o=>{if(o.material)o.material.needsUpdate=true});this.saveP()};
   $('s_fov').oninput=e=>{S.fov=+e.target.value;$('v_fov').textContent=S.fov;this.saveP()};
   const det=d=>{S.detail=d;this.saveP();$('dl').classList.toggle('on',d==='low');$('dh').classList.toggle('on',d==='high');this.resize();if(this.state==='menu'){this.loadTrack(this.sel.track);this.spawnBG()}};$('dl').onclick=()=>det('low');$('dh').onclick=()=>det('high');
+  if($('gfxc'))[...$('gfxc').children].forEach(b=>b.onclick=()=>{this.applyGfx(b.dataset.g,true)});
   $('pr').onclick=()=>this.pause(false);$('pc').onclick=()=>this.nextCam();$('ps').onclick=()=>this.openSet('c');$('pq').onclick=()=>this.quit();
   this.mark();
  }
- saveP(){try{const S=this.set,e=this.sel;localStorage.setItem('apexgp3d.v3',JSON.stringify({v:3,set:{ev:this.sfx.ev,sv:this.sfx.sv,mu:!!this.sfx.mu,mus:this.sfx.mus!==false,shadows:!!S.shadows,detail:S.detail,fov:S.fov,steer:S.steer,bsz:S.bsz||1.15,dbg:!!S.dbg},sel:{team:e.team,drv:e.drv,tire:e.tire,track:e.track,laps:e.laps,sess:e.sess,sa:e.sa,ba:e.ba,ea:e.ea,ln:e.ln,diff:e.diff,mpai:e.mpai,yr:e.yr,pname:e.pname||'',eng:e.eng||'v8'}}))}catch(x){}}
+ applyGfx(mode,save){
+  const S=this.set,m=['maxfps','balanced','ultra'].includes(mode)?mode:'balanced';S.gfx=m;
+  if($('gfxc'))[...$('gfxc').children].forEach(b=>{const on=b.dataset.g===m;b.classList.toggle('on',on);b.classList.toggle('is-selected',on)});
+  const shOn=m!=='maxfps';S.shadows=shOn;if($('s_sh'))$('s_sh').checked=shOn;
+  this.r.shadowMap.enabled=shOn;if(this.sun){this.sun.castShadow=shOn;const sz=m==='ultra'?(this.isMob?1024:2048):(this.isMob?512:1024);if(this.sun.shadow.mapSize.x!==sz){this.sun.shadow.mapSize.set(sz,sz);if(this.sun.shadow.map){this.sun.shadow.map.dispose();this.sun.shadow.map=null}}}
+  this.r.shadowMap.type=m==='ultra'?THREE.PCFSoftShadowMap:THREE.PCFShadowMap;
+  if(this.camera){this.camera.far=m==='maxfps'?5500:18000;this.camera.updateProjectionMatrix()}
+  this.scene.traverse(o=>{if(o.material)o.material.needsUpdate=true});
+  this.resize();if(save)this.saveP();
+ }
+ saveP(){try{const S=this.set,e=this.sel;localStorage.setItem('apexgp3d.v3',JSON.stringify({v:3,set:{ev:this.sfx.ev,sv:this.sfx.sv,mu:!!this.sfx.mu,mus:this.sfx.mus!==false,shadows:!!S.shadows,detail:S.detail,gfx:S.gfx||'balanced',fov:S.fov,steer:S.steer,bsz:S.bsz||1.15,dbg:!!S.dbg},sel:{team:e.team,drv:e.drv,tire:e.tire,track:e.track,laps:e.laps,sess:e.sess,sa:e.sa,ba:e.ba,ea:e.ea,ln:e.ln,diff:e.diff,mpai:e.mpai,yr:e.yr,pname:e.pname||'',eng:e.eng||'v8'}}))}catch(x){}}
  loadP(){let d=null;try{d=JSON.parse(localStorage.getItem('apexgp3d.v3')||'null')}catch(x){return}if(!d||typeof d!=='object')return;
   try{const S=this.set,e=this.sel,o=d.set||{},s=d.sel||{},n=(v,a,b,df)=>typeof v==='number'&&isFinite(v)?clamp(v,a,b):df,pk=(v,A,df)=>A.includes(v)?v:df;
-   S.fov=Math.round(n(o.fov,60,100,S.fov));S.steer=n(o.steer,.5,1.5,S.steer);S.bsz=n(o.bsz,.8,1.4,1.15);S.dbg=!!o.dbg;S.shadows=typeof o.shadows==='boolean'?o.shadows:S.shadows;S.detail=pk(o.detail,['low','high'],S.detail);
+   S.fov=Math.round(n(o.fov,60,100,S.fov));S.steer=n(o.steer,.5,1.5,S.steer);S.bsz=n(o.bsz,.8,1.4,1.15);S.dbg=!!o.dbg;S.gfx=pk(o.gfx,['maxfps','balanced','ultra'],'balanced');S.shadows=typeof o.shadows==='boolean'?o.shadows:(S.gfx!=='maxfps');S.detail=pk(o.detail,['low','high'],S.detail);
    this.sfx.ev=n(o.ev,0,1,this.sfx.ev);this.sfx.sv=n(o.sv,0,1,this.sfx.sv);this.sfx.mu=!!o.mu;this.sfx.mus=o.mus!==false;if($('s_mus'))$('s_mus').checked=this.sfx.mus;
    e.team=Math.round(n(s.team,0,TEAMS.length-1,e.team));e.drv=Math.round(n(s.drv,0,1,e.drv));e.tire=pk(s.tire,Object.keys(TIRES),e.tire);e.track=Math.round(n(s.track,0,TRACKS.length-1,e.track));e.laps=pk(s.laps,[2,3,5,6],e.laps);
    e.sess=pk(s.sess,['practice','quali','race'],e.sess);e.sa=pk(s.sa,['off','low','high'],'low');e.ba=pk(s.ba,['off','low','high'],'low');e.ea=pk(s.ea,['on','off'],'on');e.ln=pk(s.ln,['full','corner','off'],'corner');e.diff=pk(s.diff,['easy','normal','hard'],'normal');e.mpai=pk(s.mpai,['on','off'],'on');e.yr=pk(+s.yr,[2026,2027],2027);e.eng=pk(s.eng,['v10','v8','v6'],'v8');this.sfx.mode=e.eng;e.pname=typeof s.pname==='string'?s.pname.slice(0,14):'';if($('mpName'))$('mpName').value=e.pname;setSeason(e.yr)}catch(x){console.warn('settings restore failed',x)}}
  syncSet(){try{const S=this.set,v=(id,x)=>{const e=$(id);if(e)e.value=x},t=(id,x)=>{const e=$(id);if(e)e.textContent=x};v('s_st',S.steer);t('v_st',S.steer.toFixed(2));v('s_bsz',S.bsz||1.15);t('v_bsz',(S.bsz||1.15).toFixed(2)+'x');document.documentElement.style.setProperty('--btn-sc',S.bsz||1.15);if($('s_dbg'))$('s_dbg').checked=!!S.dbg;if($('netDbg'))$('netDbg').classList.toggle('on',!!S.dbg);v('s_ev',this.sfx.ev);v('s_sv',this.sfx.sv);v('s_fov',S.fov);t('v_fov',S.fov);
    const cb=$('camb');if(cb)cb.textContent='Cam: '+['Chase','Close 3P','T-Cam','Halo','Eagle'][this.view]+' (C)';
-   $('s_mu').checked=!!this.sfx.mu;$('s_sh').checked=!!S.shadows;this.r.shadowMap.enabled=!!S.shadows;if(this.sun)this.sun.castShadow=!!S.shadows;$('dl').classList.toggle('on',S.detail==='low');$('dh').classList.toggle('on',S.detail==='high');this.resize();this.mark()}catch(x){console.warn(x)}}
+   $('s_mu').checked=!!this.sfx.mu;this.applyGfx(S.gfx||'balanced',false);$('s_sh').checked=!!S.shadows;this.r.shadowMap.enabled=!!S.shadows;if(this.sun)this.sun.castShadow=!!S.shadows;$('dl').classList.toggle('on',S.detail==='low');$('dh').classList.toggle('on',S.detail==='high');this.resize();this.mark()}catch(x){console.warn(x)}}
  mark(){document.querySelectorAll('.chips[data-k]').forEach(c=>[...c.children].forEach(b=>{const on=String(this.sel[c.dataset.k])===b.dataset.v;b.classList.toggle('on',on);b.classList.toggle('is-selected',on)}))}
  go(n,back){this.saveP();if(n&&this.scr&&this.scr!==n&&!back)this.hist.push(this.scr);this.scr=n;for(const s of this.screens)$('s_'+s).classList.toggle('on',s===n);this.showMode=n==='team'||n==='driver';
   if(n==='team')this.teamUI(0);if(n==='driver')this.driverUI();if(n==='ready'||n==='msetup'){this.syncTrack();this.trackUI();if(n==='ready')this.readyUI()}if(n==='lobby')this.lobby();if(n==='custom')this.cgrid();this.qbar()}
@@ -628,7 +655,7 @@ ui(){
    inst(B1,matW,gw);inst(B1,matW,gr);inst(B1,new THREE.MeshBasicMaterial({color:0xffffff}),gg);inst(new THREE.CylinderGeometry(1.1,1.3,6.4,8),matW,cB);inst(new THREE.SphereGeometry(1.25,8,6),matW,cH);inst(new THREE.CylinderGeometry(3.6,3.6,2.4,10),matW,ty);inst(B1,matW,ct);inst(B1,mm2,mo);inst(new THREE.CylinderGeometry(.5,.5,7,5),mat(0x444444),mp)}
 
  }
- spawnBG(){this.clearCars();const T=this.T;this.state='menu';this.cars=[];for(let k=0;k<8;k++){const c=new Car(k%TEAMS.length,'SMH'[k%3],false,.94+Math.random()*.04,rnd(-18,18)),i=(k*Math.floor(T.N/8)+10)%T.N,p=T.at(i,c.line);Object.assign(c,{x:p.x,y:p.z,a:T.h[i],idx:i,pidx:i,ey:p.y,vx:Math.cos(T.h[i])*200,vy:Math.sin(T.h[i])*200});this.addCar(c)}this.mt=0}
+ spawnBG(){this.clearCars();const T=this.T;this.state='menu';this.cars=[];for(let k=0;k<8;k++){const c=new Car(k%TEAMS.length,'SMH'[k%3],false,.94+Math.random()*.04,rnd(-18,18)),i=(k*Math.floor(T.N/8)+10)%T.N,p=T.at(i,c.line);Object.assign(c,{x:p.x,y:p.z,a:T.h[i],px:p.x,py:p.z,pa:T.h[i],pey:p.y,idx:i,pidx:i,ey:p.y,vx:Math.cos(T.h[i])*200,vy:Math.sin(T.h[i])*200});this.addCar(c)}this.mt=0}
  clearCars(){for(const c of this.cars)this.scene.remove(c.o.g);this.cars=[]}
  carName(c){if(c.pname)return c.pname;const d=(DR[c.team]||[])[c.drv||0];return d?d[0]:TEAMS[c.team].n}
  shortName(c){if(c.pname)return c.pname.toUpperCase().slice(0,11);const d=(DR[c.team]||[])[c.drv||0];if(!d)return TEAMS[c.team].a;const parts=d[0].replace(/\sJr\.$/,'').split(' ');return parts[parts.length-1].toUpperCase().slice(0,11)}
@@ -644,7 +671,7 @@ startSeries(){this.cleanRun();this.sfx.init();const q=this.flow.mode==='gp'?[thi
  raceSP(){const sel=this.sel,dm=this.diffMul(),ai=TEAMS.map((t,i)=>i).filter(i=>i!=sel.team).sort((a,b)=>TEAMS[b].s-TEAMS[a].s);ai.splice(Math.min(this.gridPos,TEAMS.length-1),0,sel.team);
   ai.forEach((ti,k)=>{const p=ti==sel.team,c=new Car(ti,p?sel.tire:'SMMHM'[Math.random()*5|0],p,(TEAMS[ti].s+(Math.random()-.5)*.015)*dm,rnd(-15,15),p?sel.drv:0);this.grid(c,k);if(p)this.P=c;this.addCar(c)});this.begin(this.ser.laps,.8+Math.random()*1.6)}
  soloSP(){const sel=this.sel,c=new Car(sel.team,sel.tire,true,1,0,sel.drv);this.grid(c,0);this.P=c;this.addCar(c);this.begin(this.ser.laps,0,true)}
- grid(c,k){const T=this.T,si=(T.N-4-k*6+T.N)%T.N,lat=k%2?T.hw*.4:-T.hw*.4,p=T.at(si,lat);Object.assign(c,{x:p.x,y:p.z,a:T.h[si],idx:si,pidx:si,ey:p.y,vx:0,vy:0})}
+ grid(c,k){const T=this.T,si=(T.N-4-k*6+T.N)%T.N,lat=k%2?T.hw*.4:-T.hw*.4,p=T.at(si,lat);Object.assign(c,{x:p.x,y:p.z,a:T.h[si],px:p.x,py:p.z,pa:T.h[si],pey:p.y,idx:si,pidx:si,ey:p.y,vx:0,vy:0})}
 begin(laps,h,solo){this.laps=laps;this._hs={};this._hudT=1;this.lastGear=null;this.acc=0;this.clearFade();if(this.camera){this.camera.clearViewOffset();this.camera.fov=this.set.fov}this.resize();if(this.P)this.cam.a=this.P.a;if(this.plat&&this.plat.onRaceStart)this.plat.onRaceStart();else if(this.isMob&&screen.orientation&&screen.orientation.lock){screen.orientation.lock('landscape').catch(()=>{})}this.sfx.silenceRace();this.sfx.playTheme('off');this.sfx.mode=this.sel.eng||'v8';Object.assign(this,{state:solo?'race':'lights',lt:0,lit:0,hold:h,raceT:0,pen:0,jump:false,pit:null,nextTire:this.P.tire,doneT:-1,outro:null,tip:8,order:null,wn:0});
   this.go(null);$('hud').style.display='block';$('lights').style.display=solo?'none':'flex';this.tw=0;
   $('tower').innerHTML=this.cars.map(()=>'<div class="tr"><b></b><img class="lg" alt=""><span></span><i class="ty"></i><em></em></div>').join('');this.msg(solo?'Cross the line to start timing':'FORMATION COMPLETE');$('hint').style.opacity=1;this.hintT=9;this.qbar();this.frame(0)}
@@ -805,49 +832,61 @@ begin(laps,h,solo){this.laps=laps;this._hs={};this._hudT=1;this.lastGear=null;th
 
  nextCam(){this.view=(this.view+1)%5;const nm=['WIDE CHASE','CLOSE 3RD-PERSON','T-CAM ONBOARD','HALO COCKPIT','EAGLE EYE'][this.view];this.msg('CAMERA: '+nm);const cb=$('camb');if(cb)cb.textContent='Cam: '+['Chase','Close 3P','T-Cam','Halo','Eagle'][this.view]+' (C)'}
   /* ---------- camera + HUD ---------- */
- frame(dt){
+ frame(dt,alpha){
+  const a=alpha!=null?clamp(alpha,0,1):1;
+  // Sub-frame visual interpolation: eliminates 60Hz fixed-step micro-stutter on 60/90/120/144/240Hz+ screens
+  for(const c of this.cars){
+   if(c.px==null){c.px=c.x;c.py=c.y;c.pa=c.a;c.pey=c.ey}
+   const rx=c.px+(c.x-c.px)*a,ry=c.py+(c.y-c.py)*a,ra=c.pa+angd(c.a,c.pa)*a,rey=c.pey+(c.ey-c.pey)*a;
+   c.rx=rx;c.ry=ry;c.ra=ra;c.rey=rey;
+   if(c.o&&c.o.g){c.o.g.position.set(rx,rey+c.pitL,ry);c.o.g.rotation.y=-ra}
+  }
   const cam=this.camera,T=this.T,P=this.P,race=P&&this.state!=='menu';let fx,fy,fz;
   if(!race){this.mc(dt);fx=cam.position.x;fy=cam.position.y;fz=cam.position.z}
   else if(this.outro){
-   const w=this.outro.win,ot=this.outro.t,shot=Math.floor(ot/4.5)%3,ca=Math.cos(w.a),sa=Math.sin(w.a);
+   const w=this.outro.win,ot=this.outro.t,shot=Math.floor(ot/4.5)%3,wx=w.rx!=null?w.rx:w.x,wy=w.ry!=null?w.ry:w.y,wey=w.rey!=null?w.rey:w.ey,wa=w.ra!=null?w.ra:w.a,ca=Math.cos(wa),sa=Math.sin(wa);
    const vw=Math.max(1,(window.visualViewport&&window.visualViewport.width)||innerWidth),vh=Math.max(1,(window.visualViewport&&window.visualViewport.height)||innerHeight);
    if(this.state==='done2')cam.setViewOffset(vw,vh,-vw*.22,0,vw,vh);else cam.clearViewOffset();
    if(shot===0){
     // Heroic low front-3/4 broadcast tracking shot during winning outlap
     const side=Math.sin(ot*.35)>=0?1:-1;
-    cam.position.set(w.x+ca*54-sa*side*26,w.ey+12,w.y+sa*54+ca*side*26);
-    cam.lookAt(w.x,w.ey+4,w.y);
+    cam.position.set(wx+ca*54-sa*side*26,wey+12,wy+sa*54+ca*side*26);
+    cam.lookAt(wx,wey+4,wy);
    }else if(shot===1){
     // Sweeping low side-profile chase highlighting livery & spinning wheels
-    const ang=w.a+Math.PI*.72+Math.sin(ot*.6)*.22;
-    cam.position.set(w.x+Math.cos(ang)*52,w.ey+14,w.y+Math.sin(ang)*52);
-    cam.lookAt(w.x+ca*10,w.ey+4,w.y+sa*10);
+    const ang=wa+Math.PI*.72+Math.sin(ot*.6)*.22;
+    cam.position.set(wx+Math.cos(ang)*52,wey+14,wy+Math.sin(ang)*52);
+    cam.lookAt(wx+ca*10,wey+4,wy+sa*10);
    }else{
     // Elevated helicopter celebration orbit
-    const ang=w.a+Math.PI+ot*.55;
-    cam.position.set(w.x+Math.cos(ang)*78,w.ey+34,w.y+Math.sin(ang)*78);
-    cam.lookAt(w.x,w.ey+5,w.y);
+    const ang=wa+Math.PI+ot*.55;
+    cam.position.set(wx+Math.cos(ang)*78,wey+34,wy+Math.sin(ang)*78);
+    cam.lookAt(wx,wey+5,wy);
    }
    cam.fov+=(56-cam.fov)*Math.min(1,dt*4);cam.updateProjectionMatrix();
-   P.o.helm.visible=true;fx=w.x;fy=w.ey;fz=w.y;
+   P.o.helm.visible=true;fx=wx;fy=wey;fz=wy;
   }
-  else{const f=Math.min(1,P.spd/470),o=P.o.g;this.cam.a+=angd(P.a,this.cam.a)*(1-Math.exp(-dt*6));let fov=this.set.fov;
+  else{const px=P.rx!=null?P.rx:P.x,py=P.ry!=null?P.ry:P.y,pey=P.rey!=null?P.rey:P.ey,pa=P.ra!=null?P.ra:P.a;
+   const f=Math.min(1,P.spd/470),o=P.o.g;this.cam.a+=angd(pa,this.cam.a)*(1-Math.exp(-dt*7.5));let fov=this.set.fov;
    if(this.view===0){const ca=Math.cos(this.cam.a),sa=Math.sin(this.cam.a),sh=f*f*.45+(P.ersOn&&P.ers>0?.28:0);fov+=20*f+(P.ersOn?4:0);
-    cam.position.set(P.x-ca*68+rnd(-sh,sh),P.ey+21+rnd(-sh,sh),P.y-sa*68+rnd(-sh,sh));cam.lookAt(P.x+ca*36,P.ey+5,P.y+sa*36)}
+    cam.position.set(px-ca*68+rnd(-sh,sh),pey+21+rnd(-sh,sh),py-sa*68+rnd(-sh,sh));cam.lookAt(px+ca*36,pey+5,py+sa*36)}
    else if(this.view===1){const ca=Math.cos(this.cam.a),sa=Math.sin(this.cam.a),sh=f*f*.32+(P.ersOn&&P.ers>0?.22:0);fov+=16*f+(P.ersOn?4:0);
     // Close Third-Person Cam: tight behind rear wing for visceral F1 speed feel
-    cam.position.set(P.x-ca*40+rnd(-sh,sh),P.ey+13.2+rnd(-sh,sh),P.y-sa*40+rnd(-sh,sh));cam.lookAt(P.x+ca*48,P.ey+4.5,P.y+sa*48)}
+    cam.position.set(px-ca*40+rnd(-sh,sh),pey+13.2+rnd(-sh,sh),py-sa*40+rnd(-sh,sh));cam.lookAt(px+ca*48,pey+4.5,py+sa*48)}
    else if(this.view===2){fov=this.set.fov+10+12*f+(P.ersOn?3:0);o.updateMatrixWorld(true);const lat=clamp(P.steer*-.45,-.45,.45),sh=f*.09;
     const e=o.localToWorld(this._v1.set(-2.6,7.65,-.75+lat)),t=o.localToWorld(this._v2.set(92,4.4,lat*2));cam.position.set(e.x+rnd(-sh,sh),e.y+rnd(-sh,sh),e.z);cam.lookAt(t)}
    else if(this.view===3){fov=this.set.fov+14+10*f;o.updateMatrixWorld(true);const sh=f*.11;
     const e=o.localToWorld(this._v1.set(-.6,5.35,0)),t=o.localToWorld(this._v2.set(92,4.6,0));cam.position.set(e.x+rnd(-sh,sh),e.y+rnd(-sh,sh),e.z);cam.lookAt(t)}
-   else{const ca=Math.cos(this.cam.a),sa=Math.sin(this.cam.a);cam.position.set(P.x-ca*145,P.ey+290,P.y-sa*145);cam.lookAt(P.x+ca*48,P.ey,P.y+sa*48);fov=this.set.fov-10}
-   cam.fov+=(fov-cam.fov)*Math.min(1,dt*6);cam.updateProjectionMatrix();P.o.helm.visible=this.view!==3;fx=P.x;fy=P.ey;fz=P.y}
+   else{const ca=Math.cos(this.cam.a),sa=Math.sin(this.cam.a);cam.position.set(px-ca*145,pey+290,py-sa*145);cam.lookAt(px+ca*48,pey,py+sa*48);fov=this.set.fov-10}
+   cam.fov+=(fov-cam.fov)*Math.min(1,dt*6);cam.updateProjectionMatrix();P.o.helm.visible=this.view!==3;fx=px;fy=pey;fz=py}
   // Dynamic tunnel darkening & interior lighting when inside enclosed tunnel (e.g. Monaco)
   {const inTun=!!(race&&T.tun&&((P.idx-T.tun[0]+T.N)%T.N)<T.tun[1]);
    this.tunK+=((inTun?1:0)-this.tunK)*Math.min(1,dt*5);
    if(this.baseSun!=null){this.sun.intensity=this.baseSun*(1-.82*this.tunK);this.hemi.intensity=this.baseHemi*(1-.62*this.tunK);this.pl.intensity=this.basePl+1.65*this.tunK}}
-  this.dome.position.copy(cam.position);this.sun.target.position.set(fx,fy,fz);this.sun.position.set(fx+300,fy+520,fz+200);this.pl.position.set(fx,fy+150,fz);
+  this.dome.position.copy(cam.position);
+  // Snap shadow frustum to 4-unit grid to eliminate shadow shimmer & stabilize shadow map texels
+  const sfx=Math.round(fx*.25)*4,sfz=Math.round(fz*.25)*4;
+  this.sun.target.position.set(sfx,fy,sfz);this.sun.position.set(sfx+300,fy+520,sfz+200);this.pl.position.set(fx,fy+150,fz);
   // Dynamic speed-reactive racing line: starts ahead of car (disappears immediately behind) & colors live by P.spd vs corner limit
   {const rl=this.rl;if(rl){const m=this.sel.ln,on=!!(race&&this.state!=='done2'&&m!=='off'),f=on&&m==='full',c=on&&m==='corner';rl.core.visible=rl.halo.visible=f;rl.coreC.visible=rl.haloC.visible=c;
    if(on){const N=T.N,s0=(P.idx+1)%N,cnt=rl.n,v=P.spd,gm=f?rl.core:rl.coreC,hm=f?rl.halo:rl.haloC,ca=gm.geometry.attributes.color,ha=hm.geometry.attributes.color;
@@ -904,13 +943,14 @@ begin(laps,h,solo){this.laps=laps;this._hs={};this._hudT=1;this.lastGear=null;th
    this.order.slice(0,5).forEach((c,i)=>{const y=42+i*42;x.fillStyle=hex(TEAMS[c.team].c);x.fillRect(6,y,8,30);x.fillStyle='#fff';x.font='800 20px Arial';x.textAlign='left';x.fillText((i+1)+' '+TEAMS[c.team].a,20,y+22)});this.pylon.tx.needsUpdate=true}}
   if(this.tw>(mob?.25:.12)&&this.order){this.tw=0;const rows=H.tower.children,o=this.order;o.forEach((c,i)=>{const r=rows[i];if(!r)return;r.className='tr'+(c.isP?' me':'')+(mob&&i>=5&&!c.isP?' mhid':'');r.children[0].textContent=i+1;const lg=r.children[1];if(lg.dataset.t!=c.team){lg.dataset.t=c.team;lg.src=logo(c.team)}r.children[2].textContent=this.shortName(c);const ty=r.children[3];if(ty.dataset.ty!==c.tire){ty.dataset.ty=c.tire;ty.textContent=c.tire;ty.className='ty '+c.tire}r.children[4].textContent=c.fin!=null?'FIN':(c.pitS>0||(c.isP&&c.inPit))?'PIT':i?'+'+((o[0].prog-c.prog)/330).toFixed(1):'LEADER'})}
  }
- loop(t){requestAnimationFrame(t=>this.loop(t));const raw=(t-this.last)/1000||.016;this.last=t;this.fps=(this.fps||60)*.92+Math.min(144,1/Math.max(raw,.001))*.08;
-  // Phase 3: Fixed-timestep accumulator (1/60s) keeps physics identical across 30-60 FPS mobile & 60-144+ FPS PC
+ loop(t){requestAnimationFrame(t=>this.loop(t));const raw=(t-this.last)/1000||.016;this.last=t;this.fps=(this.fps||60)*.92+Math.min(360,1/Math.max(raw,.001))*.08;
+  // Fixed-timestep physics (60Hz) + sub-frame render interpolation (smooth at 60/90/120/144/240Hz+ native refresh)
   const dt=Math.min(.1,raw);this.acc=Math.min(this.acc+dt,NET_CFG.fixedDt*NET_CFG.maxSubSteps);
   const run=(f)=>{try{f()}catch(e){this.err(e)}};
-  run(()=>{while(this.acc>=NET_CFG.fixedDt){this.update(NET_CFG.fixedDt);this.acc-=NET_CFG.fixedDt}});
-  run(()=>this.frame(dt));run(()=>this.hud(dt));
-  if(this.set.dbg&&$('netDbg')){this._dbgT=(this._dbgT||0)+dt;if(this._dbgT>=.25){this._dbgT=0;$('netDbg').textContent=`${(this.isMob?'MOB':'PC')} · ${Math.round(this.fps)} FPS${this.mp?` · ${this.netHz} Hz · ${Math.round(this.rtt)} ms`:' · OFFLINE'}`}}
+  run(()=>{while(this.acc>=NET_CFG.fixedDt){for(const c of this.cars){c.px=c.x;c.py=c.y;c.pa=c.a;c.pey=c.ey}this.update(NET_CFG.fixedDt);this.acc-=NET_CFG.fixedDt}});
+  const alpha=this.state==='paused'?1:clamp(this.acc/NET_CFG.fixedDt,0,1);
+  run(()=>this.frame(dt,alpha));run(()=>this.hud(dt));
+  if(this.set.dbg&&$('netDbg')){this._dbgT=(this._dbgT||0)+dt;if(this._dbgT>=.25){this._dbgT=0;$('netDbg').textContent=`${(this.isMob?'MOB':'PC')} · ${Math.round(this.fps)} FPS (${(this.set.gfx||'balanced').toUpperCase()})${this.mp?` · ${this.netHz} Hz · ${Math.round(this.rtt)} ms`:' · OFFLINE'}`}}
   run(()=>{if(this.ctxLost)return;if(this.showMode&&this.show){this.showStep(dt);this.r.render(this.show.sc,this.show.cam)}else this.r.render(this.scene,this.camera)});run(()=>this.perf(raw))}
  err(e){console.error(e);const m=String(e&&e.message||e),n=(this.errN=(this.errN||0)+1);if(n<=3||m!==this.errM){this.errM=m;try{const b=$('err');b.textContent='ERROR: '+m;b.style.display='block'}catch(x){}}}
  perf(raw){if(this.state!=='race'&&this.state!=='lights'){this.slowT=0;return}this.slowT=raw>.045?(this.slowT||0)+raw:Math.max(0,(this.slowT||0)-raw*2);
@@ -920,19 +960,34 @@ begin(laps,h,solo){this.laps=laps;this._hs={};this._hudT=1;this.lastGear=null;th
    else if(L===3){R.setPixelRatio(.7);R.setSize(innerWidth,innerHeight,false);this.msg('LOW FPS: RESOLUTION LOWERED')}
    else{this.camera.far=2600;this.camera.updateProjectionMatrix();this.scene.fog.far=2000;this.msg('LOW FPS: VIEW DISTANCE REDUCED')}}}
 
- /* ---------- online (PeerJS) ---------- */
-netOk(){if(typeof Peer==='undefined'){$('mps').textContent='PeerJS did not load. Check your connection and reload.';return false}return true}
- netClose(){try{this.peer&&this.peer.destroy()}catch(e){}this.peer=this.hc=null;this.conns=[];this.mp=false;this.roster=null}
+ /* ---------- online (PeerJS · STUN + TURN Relay) ---------- */
+ netOk(){if(typeof Peer==='undefined'){$('mps').textContent='PeerJS did not load. Check internet connection and reload.';return false}return true}
+ netClose(){if(this._mpT){clearTimeout(this._mpT);this._mpT=null}try{this.peer&&this.peer.destroy()}catch(e){}this.peer=this.hc=null;this.conns=[];this.mp=false;this.roster=null}
  host(){if(!this.netOk())return;this.netClose();const ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let code='';for(let i=0;i<4;i++)code+=ch[Math.random()*ch.length|0];
-  $('mps').textContent='Opening room...';const p=this.peer=new Peer('apexgp-'+code);this.isHost=true;this.myId=0;this.nid=0;this.code=code;
-  p.on('open',()=>{this.roster=[];this.mpf='host';this.go('team')});
-  p.on('error',e=>{$('mps').textContent=e.type==='unavailable-id'?'Code taken: press Host room again':'Network error: '+e.type});
-  p.on('connection',c=>{if(this.conns.length>=7||this.state!=='menu'){c.on('open',()=>{c.send({t:'full'});setTimeout(()=>c.close(),300)});return}
-   c.pid=++this.nid;this.conns.push(c);c.on('data',d=>this.rx(c,d));c.on('close',()=>{this.conns=this.conns.filter(x=>x!==c);if(this.roster){this.roster=this.roster.filter(r=>r.id!==c.pid);this.lobby(true)}});c.on('open',()=>c.send({t:'welcome',id:c.pid}))})}
- join(code){if(!this.netOk())return;code=(code||'').toUpperCase().trim();if(code.length!=4){$('mps').textContent='Enter the 4-character code';return}
-  this.netClose();this.isHost=false;this.code=code;$('mps').textContent='Connecting...';const p=this.peer=new Peer();
-  p.on('error',e=>{$('mps').textContent=e.type==='peer-unavailable'?'Room not found: check the code':'Network error: '+e.type});
-  p.on('open',()=>{const c=this.hc=p.connect('apexgp-'+code);c.on('open',()=>{$('mps').textContent='';this.mpf='guest';this.go('team')});c.on('data',d=>this.rx(c,d));c.on('close',()=>{if(this.state==='menu'&&this.scr==='lobby')$('linfo').textContent='Disconnected from host'})})}
+  $('mps').textContent='Connecting to signaling server...';const p=this.peer=new Peer('apexgp-'+code,NET_CFG.peerOpts);this.isHost=true;this.myId=0;this.nid=0;this.code=code;
+  this._mpT=setTimeout(()=>{if(this.peer===p&&!p.open){$('mps').textContent='Signaling server timed out. Check internet or try again.';this.netClose()}},12000);
+  p.on('open',()=>{if(this._mpT){clearTimeout(this._mpT);this._mpT=null}$('mps').textContent='';this.roster=[];this.mpf='host';this.go('team')});
+  p.on('disconnected',()=>{if(this.peer===p&&!p.destroyed)try{p.reconnect()}catch(e){}});
+  p.on('error',e=>{if(this._mpT){clearTimeout(this._mpT);this._mpT=null}$('mps').textContent=e.type==='unavailable-id'?'Code taken — press Host room again':e.type==='network'||e.type==='server-error'?'Signaling server unreachable — retry in a moment':'Network error: '+e.type});
+  p.on('connection',c=>{if(this.conns.length>=7||this.state!=='menu'){const sendFull=()=>{try{c.send({t:'full'})}catch(e){}setTimeout(()=>{try{c.close()}catch(e){}},300)};if(c.open)sendFull();else c.on('open',sendFull);return}
+   c.pid=++this.nid;this.conns.push(c);
+   const drop=()=>{this.conns=this.conns.filter(x=>x!==c);if(this.roster){this.roster=this.roster.filter(r=>r.id!==c.pid);this.lobby(true)}};
+   c.on('data',d=>this.rx(c,d));c.on('close',drop);c.on('error',drop);
+   const hi=()=>{try{c.send({t:'welcome',id:c.pid})}catch(e){}};if(c.open)hi();else c.on('open',hi)})}
+ join(code){if(!this.netOk())return;code=(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'').trim();if(code.length!=4){$('mps').textContent='Enter the 4-character room code';return}
+  this.netClose();this.isHost=false;this.code=code;$('mps').textContent='Connecting to signaling server...';const p=this.peer=new Peer(NET_CFG.peerOpts);
+  let done=false;const fail=(msg)=>{if(done)return;done=true;if(this._mpT){clearTimeout(this._mpT);this._mpT=null}$('mps').textContent=msg;this.netClose()};
+  this._mpT=setTimeout(()=>fail('Connection timed out (NAT/firewall). Ask host to re-open or try same Wi-Fi/4G.'),15000);
+  p.on('disconnected',()=>{if(this.peer===p&&!p.destroyed&&!done)try{p.reconnect()}catch(e){}});
+  p.on('error',e=>fail(e.type==='peer-unavailable'?'Room '+code+' not found — check code or host lobby':e.type==='network'||e.type==='server-error'?'Signaling server unreachable — retry':'Network error: '+e.type));
+  p.on('open',()=>{if(done)return;$('mps').textContent='Room '+code+' found — handshaking P2P / Relay...';
+   const c=this.hc=p.connect('apexgp-'+code,{serialization:'json',reliable:true});
+   const onOpen=()=>{if(done)return;done=true;if(this._mpT){clearTimeout(this._mpT);this._mpT=null}$('mps').textContent='';this.mpf='guest';this.go('team')};
+   if(c.open)onOpen();else c.on('open',onOpen);
+   c.on('data',d=>this.rx(c,d));
+   c.on('error',e=>fail('P2P connection error: '+(e&&e.message||e&&e.type||'blocked')));
+   c.on('close',()=>{if(!done)fail('Host closed connection');else if(this.state==='menu'&&this.scr==='lobby')$('linfo').textContent='Disconnected from host'});
+   try{if(c.peerConnection)c.peerConnection.oniceconnectionstatechange=()=>{const st=c.peerConnection&&c.peerConnection.iceConnectionState;if(!done&&st==='checking')$('mps').textContent='Negotiating NAT / TURN relay...';else if(!done&&st==='failed')fail('ICE/NAT blocked — try switching Wi-Fi or mobile data')}}catch(e){}})}
  sendHello(){const nm=(this.sel.pname||'').trim()||DR[this.sel.team][this.sel.drv][0];if(this.hc&&this.hc.open)this.hc.send({t:'hello',team:this.sel.team,tire:this.sel.tire,drv:this.sel.drv,name:nm})}
  rx(c,d){switch(d.t){
   case'welcome':this.myId=d.id;break;
@@ -949,6 +1004,7 @@ netOk(){if(typeof Peer==='undefined'){$('mps').textContent='PeerJS did not load.
    if(this.isHost){for(const x of this.conns)if(x!==c&&x.open)x.send(d)}break}
   case's':{const now=performance.now(),k=this.cars.find(x=>x.id===d.id);if(k&&k!==this.P){d.s.ts=now;if(!k.snaps)k.snaps=[];k.snaps.push(d.s);if(k.snaps.length>4)k.snaps.shift();k.net=d.s}if(this.isHost)for(const x of this.conns)if(x!==c&&x.open)x.send(d)}}}
  lobby(bc){const r=this.roster||[],aiOn=this.sel.mpai==='on';$('lcode').textContent=this.isHost?'Room code: '+this.code+' · up to 8 players ('+r.length+'/8 joined)':'Joined room '+this.code;
+  if($('cpLink'))$('cpLink').style.display=this.isHost?'':'none';
   $('lob').innerHTML=r.map((q,i)=>`<div style="border-left:8px solid ${hex(TEAMS[q.team].c)};padding:4px 10px;margin:4px 0;background:rgba(0,0,0,.25);border-radius:10px">${q.id===0?'Host':'Player '+(i+1)}: <b>${(q.name||(DR[q.team][q.drv||0]||[])[0]||'Driver').replace(/</g,'&lt;')}</b> · ${TEAMS[q.team].n}${q.id===this.myId?' (you)':''}</div>`).join('');
   const canStart=this.isHost&&(r.length>1||aiOn);$('gomp').style.display=canStart?'':'none';
   const aiTxt=aiOn?` · AI Fill: ON (${Math.max(0,TEAMS.length-r.length)} AI, ${(this.sel.diff||'normal').toUpperCase()})`:' · AI Fill: OFF';
