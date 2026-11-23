@@ -4,6 +4,17 @@ All notable changes, bug fixes, visual upgrades, and feature patches for **Apex 
 
 ---
 
+## [v1.2.2] — Uploaded Rock Soundtrack, Pro Mobile Selection UI, Tyre Lifespan Cards & Larger Mobile Minimap
+### Added & Improved
+- **Custom Rock Soundtrack (`assets/music/theme.mp3`, `src/core/engine.js`)**: Integrated uploaded rock theme across **PC & Mobile** for Intro/Home & all Selection pages (continuous across Home → Team → Driver → Briefing), smooth `0.45s` fade-out at race start, and climactic anthem chorus (`1:36`) fade-in at chequered flag across the winning outlap & results (with automatic WebAudio synth fallback if offline).
+- **Pro Selection UI & Fixed Mobile Highlights (`src/core/base.css`, `src/core/engine.js`, `index.html`, `mobile.html`)**:
+  - Fixed CSS specificity bug where `body.touch .btn` hid active `.on`/`.go` red highlights on mobile chips and CTAs.
+  - Upgraded `#tires` into rich color-coded compound cards displaying grip & lifespan (**SOFT** `Max Grip · 1–2 Laps`, **MEDIUM** `Balanced · 3–5 Laps`, **HARD** `Endurance · 6–10 Laps`) that **live-update the rotating 3D car's tyre sidewall color** on click/tap!
+  - Added compact single-row Driver header (`Choose driver` + `2026 | 2027`), `✓ SELECTED` badge on active driver card, and left-docked split layout (`min(385px, 50vw)`) with right-shifted 3D showcase turntable so mobile landscape never clips or overlaps the car.
+- **Larger Mobile Minimap (`src/core/base.css`)**: Enlarged mobile `#mm` from `58×58px` → **`92×92px`** (`opacity: .94`) for clear upcoming-corner readability.
+
+---
+
 ## [v1.2.1] — Fix Post-Race Audio Static, Fix Re-Race Camera Alignment, AI Worn-Tyre Pacing & Mobile Fullscreen
 ### Fixed
 - **Off-Center Camera on Re-Race (`src/core/engine.js`)**: `runNow()` now calls `cleanRun()` and `begin()` explicitly clears split-screen `camera.clearViewOffset()`, snaps `this.cam.a = this.P.a`, resets FOV, clears old skidmarks/particles, and snaps `frame(0)` on the grid so every Race Again / Next Circuit starts dead-center on the car.
