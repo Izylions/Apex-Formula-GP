@@ -4,6 +4,16 @@ All notable changes, bug fixes, visual upgrades, and feature patches for **Apex 
 
 ---
 
+## [v1.2.1] — Fix Post-Race Audio Static, Fix Re-Race Camera Alignment, AI Worn-Tyre Pacing & Mobile Fullscreen
+### Fixed
+- **Off-Center Camera on Re-Race (`src/core/engine.js`)**: `runNow()` now calls `cleanRun()` and `begin()` explicitly clears split-screen `camera.clearViewOffset()`, snaps `this.cam.a = this.P.a`, resets FOV, clears old skidmarks/particles, and snaps `frame(0)` on the grid so every Race Again / Next Circuit starts dead-center on the car.
+- **Post-Race Static / Noise Audio (`src/core/engine.js`)**: Added `Sfx.silenceRace()` (`cancelScheduledValues` + smooth `35ms` zero ramp on engine, turbo, tyre screech, and brake hiss gains), gated race audio strictly off at chequered flag (`doneT >= 0`), and added smooth `18ms` attack ramps + `document.hidden`/`sv > 0` guards to `playTheme()` arpeggios.
+- **AI Worn-Tyre Corner Pacing (`src/core/engine.js`)**: Scaled `ctrlAI()` corner speed limit by `Math.sqrt(wMul * compoundGrip)` so Soft-tyre AI slows cleanly in chicanes/corners on Lap 2 without sliding into gravel.
+### Added
+- **Mobile Fullscreen Support (`index.html`, `mobile.html`, `src/mobile/mobile.js`, `src/core/engine.js`)**: Added PWA fullscreen meta tags, dedicated `#qF` (`⛶` / `⤢`) fullscreen toggle button in `#qb`, safe auto-fullscreen attempt on mobile race start, and `fullscreenchange` canvas resize sync.
+
+---
+
 ## [v1.2.0] — Exact Defaults (V8/2027/Close 3P), Unmistakable Button Highlights, Shared Intro/Outro Music & Universal All-Track Factory
 ### Added & Improved
 - **Standardized Default Settings (PC & Mobile)**: Engine Sound **`V8`**, Season Roster **`2027`**, Steering Assist **`LOW`**, Brake Assist **`LOW`**, Racing Line **`CORNER`**, ERS **`AUTO`**, and Camera **`Close 3rd-Person Chase`** (`defaultCam: 1`) across both PC and Mobile (`localStorage` bumped to `apexgp3d.v3` for clean migration without stale overrides).

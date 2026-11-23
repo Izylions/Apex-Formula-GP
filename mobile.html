@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Apex GP 3D</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#05080e"><title>Apex GP 3D</title>
 <link rel="stylesheet" href="src/core/base.css">
 <script>
 // Platform router: auto-detects PC vs Mobile (supports ?mode=pc or ?mode=mobile override)
@@ -18,8 +18,8 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script></head><body>
 <canvas id="gl"></canvas><div id="fx"></div><div id="fade"></div><div id="err" onclick="this.style.display='none'"></div><div id="rot" class="glass" onclick="this.classList.add('hid')"><span>↻ Rotate to landscape for best racing view</span><button type="button" class="btn sm">OK</button></div>
-<div id="qb"><button class="qbtn" id="qS">⚙ Settings</button><button class="qbtn" id="qB">‹ Back</button><button class="qbtn" id="qM">✕ Exit</button></div>
-<div class="scr" id="s_main"><div id="nav" class="glass-menu"><div class="logo">APEX<span>GP</span> <small style="font-size:11px;font-style:normal;letter-spacing:1px;opacity:.65;vertical-align:middle">v1.2.0</small></div>
+<div id="qb"><button class="qbtn" id="qF" title="Fullscreen">⛶</button><button class="qbtn" id="qS">⚙ Settings</button><button class="qbtn" id="qB">‹ Back</button><button class="qbtn" id="qM">✕ Exit</button></div>
+<div class="scr" id="s_main"><div id="nav" class="glass-menu"><div class="logo">APEX<span>GP</span> <small style="font-size:11px;font-style:normal;letter-spacing:1px;opacity:.65;vertical-align:middle">v1.2.1</small></div>
 <button class="mi" id="bSP" data-d="Race solo against the AI: Grand Prix or a custom multi-circuit event.">Single Player</button>
 <button class="mi" id="bMP" data-d="Host a 4-letter room or join a friend's code for a peer-to-peer online race.">Multiplayer</button>
 <div class="sep"></div>
