@@ -233,3 +233,6 @@ body.touch #lights{top:calc(max(6px,env(safe-area-inset-top)) + 56px);padding:5p
  #res.split #resin{width:min(360px,49vw);padding:10px 12px}#res.split h2{font-size:14px}#res.split p{font-size:11px}#res.split td,#res.split th{padding:2px 4px;font-size:11px}
  #winBadge{padding:7px 12px}#winBadge b{font-size:11px}#winBadge span{font-size:10px}
 }
+/* ---- Phase 2: Lightweight Mobile GPU Compositor (removes heavy blur & FX vignette on touch) ---- */
+body.touch .glass,body.touch #nav.glass-menu,body.touch .btn,body.touch #res.split #resin,body.touch #winBadge{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(10,15,26,.84)!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important}
+body.touch #fx{display:none!important}
