@@ -4,6 +4,19 @@ All notable changes, bug fixes, visual upgrades, and feature patches for **Apex 
 
 ---
 
+## [v1.2.3] — Multiplayer NAT/TURN Connectivity Fix, Invite Links, Sub-Frame Interpolation & Max FPS Mode
+### Fixed
+- **Multiplayer Cross-Network / Mobile Connectivity (`src/core/engine.js`, `index.html`, `mobile.html`)**:
+  - Added multi-provider **STUN + public TURN relay** `iceServers` (Google STUN, Cloudflare STUN, OpenRelay/Metered TURN on ports `80`/`443`/`443 TCP`) so PC ↔ Mobile and 4G/5G CGNAT connections succeed instead of hanging on `"Connecting..."`.
+  - Switched PeerJS DataChannel to `{ serialization: 'json', reliable: true }` (fixes PeerJS 1.5.4 BinaryPack stalls on mobile browsers).
+  - Added `peer.on('disconnected')` auto-reconnect, `conn.on('error')`, live ICE state progression, `15s` connection timeout with actionable error messages, and `cdn.jsdelivr.net` fallback if `unpkg.com` PeerJS fails to load.
+- **60Hz Fixed-Step Micro-Stutter (`src/core/engine.js`)**: Added **sub-frame visual interpolation** (`px/py/pa/pey` → `x/y/a/ey` blended by `alpha = acc / fixedDt`) across all cars & camera so 60 / 90 / 120 / 144 / 240+ Hz displays render smoothly on every native refresh frame.
+### Added & Optimized
+- **One-Click Invite Link (`index.html`, `mobile.html`, `src/core/engine.js`)**: Added `📋 Copy Invite Link` (`?join=CODE`) in Host Lobby; opening an invite URL auto-opens Multiplayer with the 4-letter code pre-filled.
+- **Max FPS / Balanced / Ultra Graphics Presets (`index.html`, `mobile.html`, `src/core/engine.js`, `src/pc/pc.js`, `src/core/base.css`)**: Added `Performance / FPS Mode` toggle in Settings → Graphics (`Max FPS` disables shadows & caps DPR to `1.0`, `Balanced` uses fast `PCFShadowMap` + `1024` shadow map on PC, `Ultra` enables `2048` `PCFSoftShadowMap`), quantized sun shadow frustum snapping, uncapped FPS readout to `360`, removed unused `EffectComposer`/`Bloom` CDN scripts, and removed `#gl` CSS filter transition overhead.
+
+---
+
 ## [v1.2.2] — Uploaded Rock Soundtrack, Pro Mobile Selection UI, Tyre Lifespan Cards & Larger Mobile Minimap
 ### Added & Improved
 - **Custom Rock Soundtrack (`assets/music/theme.mp3`, `src/core/engine.js`)**: Integrated uploaded rock theme across **PC & Mobile** for Intro/Home & all Selection pages (continuous across Home → Team → Driver → Briefing), smooth `0.45s` fade-out at race start, and climactic anthem chorus (`1:36`) fade-in at chequered flag across the winning outlap & results (with automatic WebAudio synth fallback if offline).
