@@ -4,6 +4,15 @@ All notable changes, bug fixes, visual upgrades, and feature patches for **Apex 
 
 ---
 
+## [v1.2.0] — Exact Defaults (V8/2027/Close 3P), Unmistakable Button Highlights, Shared Intro/Outro Music & Universal All-Track Factory
+### Added & Improved
+- **Standardized Default Settings (PC & Mobile)**: Engine Sound **`V8`**, Season Roster **`2027`**, Steering Assist **`LOW`**, Brake Assist **`LOW`**, Racing Line **`CORNER`**, ERS **`AUTO`**, and Camera **`Close 3rd-Person Chase`** (`defaultCam: 1`) across both PC and Mobile (`localStorage` bumped to `apexgp3d.v3` for clean migration without stale overrides).
+- **Unmistakable Button Press & Selection Highlights (`src/core/base.css`, `src/mobile/mobile.css`, `src/core/engine.js`)**: Unified `:active`, `:focus-visible`, `.is-pressed` (`90ms` min tap flash), and `.is-selected`/`.on` glow ring + scale feedback across all menus, option selectors, and race touch controls, with `touch-action: manipulation` on UI buttons and zero sticky hover on touch devices.
+- **Shared Intro & Outro Music Across PC & Mobile (`src/core/engine.js`)**: Upgraded `Sfx.playTheme('intro' | 'outro' | 'off')` with safe `AudioContext.resume()` unlock on first click/touch/key — smooth menu intro fade-out on race start and uplifting celebratory outro theme + rotating 3D golden trophy from chequered flag through live outlap & split-screen results.
+- **Universal Sepang Baseline Circuit Factory (`src/core/data.js`, `src/core/engine.js`)**: Extracted shared `TRACK_BASELINE` + `TRACK_THEMES` so all 9 tracks inherit Sepang's paddock garages/tents, corner sponsor billboards, catch-fencing, kerb outer borders, `150/100/50` braking boards, Race Control Tower, LED Timing Pylon, PBR materials, and leak-free track-switching disposal.
+
+---
+
 ## [v1.1.0] — Modular PC/Mobile Architecture, Phase 3 Cross-Play MP Sync & Close 3rd-Person Cam
 ### Added & Refactored
 - **Shared Core + Platform-Separated Architecture**: Split codebase into `src/core/` (`data.js`, `world.js`, `engine.js`, `base.css`), `src/pc/` (`pc.js`, `pc.css`), and `src/mobile/` (`mobile.js`, `mobile.css`) with automatic platform routing in `index.html` (`?mode=pc` / `?mode=mobile` override), direct `mobile.html` entry, and architecture docs in `README.md`.
