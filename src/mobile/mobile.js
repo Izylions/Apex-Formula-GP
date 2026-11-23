@@ -38,6 +38,10 @@ window.APEX_PLATFORM = {
   if (window.visualViewport) window.visualViewport.addEventListener('resize', () => G.resize());
  },
  onRaceStart() {
+  try {
+   const d = document, el = d.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
+   if (req && !d.fullscreenElement && !d.webkitFullscreenElement) req.call(el).catch(() => {});
+  } catch (e) {}
   if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {});
  }
 };
