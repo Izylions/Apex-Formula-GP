@@ -45,8 +45,30 @@ const ROSTERS={
   [['Sergio Pérez',11,'MEX'],['Valtteri Bottas',77,'FIN']]
  ]
 };
-let DR=ROSTERS[2026];
-function setSeason(yr){DR=ROSTERS[yr]||ROSTERS[2026]}
+let DR=ROSTERS[2027];
+function setSeason(yr){DR=ROSTERS[yr]||ROSTERS[2027]}
+/* Shared circuit baseline defaults + per-track atmosphere themes (eliminates hardcoded Sepang-only branches) */
+const TRACK_BASELINE={
+ grade:'contrast(1.09) saturate(0.95) brightness(1.02)',
+ kerbBorder:0x1b66c9,
+ tecPro:[0x2a5bd7,0xf0f0f0],
+ rcAccent:0xff2d3d,
+ paddock:true,
+ billboards:true,
+ catchFence:true
+};
+const TRACK_THEMES={
+ sepang:{sky:['#1b5ec4','#4f9be8','#b7dcf6','#f4e5cd','#5e8a5c',40,.62,280],fog:0xcfdbe4,grade:'contrast(1.10) saturate(0.94) brightness(1.02)',turf:0x3c5234,kerbBorder:0x1b66c9,tecPro:[0xff6a00,0xf4f4f4],rcAccent:0x00d2be,wallSp:true},
+ spa:{sky:['#3b536b','#70889e','#b4c2ce','#d6dde2','#2c4a32',56,.78,360],grade:'contrast(1.10) saturate(0.92) brightness(1.02)',turf:0x2c462e,kerbBorder:0xd4141c,tecPro:[0xe02424,0xf4f4f4],rcAccent:0xffd200},
+ silver:{sky:['#2469bd','#5d9ee0','#bad8f2','#e5ecf2','#365c34',46,.68,310],grade:'contrast(1.09) saturate(0.95) brightness(1.02)',turf:0x3b5736,kerbBorder:0x1e4ea8,tecPro:[0x2a5bd7,0xf4f4f4],rcAccent:0xff2d3d},
+ monaco:{sky:['#1256c4','#3e8ef0','#9fd3fa','#f0eadb','#1d5a8a',24,.48,250],grade:'contrast(1.09) saturate(0.98) brightness(1.02)',kerbBorder:0xd4141c,tecPro:[0xd4141c,0xf4f4f4],rcAccent:0xff2d3d,paddock:false},
+ imola:{sky:['#2266c8','#589de6','#bcdcf5','#f5e6cc','#385e34',34,.58,290],grade:'contrast(1.09) saturate(0.96) brightness(1.02)',turf:0x3d5735,kerbBorder:0x15803d,tecPro:[0x15803d,0xf4f4f4],rcAccent:0xff2d3d},
+ monza:{sky:['#2468c6','#5b9ee4','#bdddf4','#f3e5cc','#345a32',32,.56,300],grade:'contrast(1.09) saturate(0.96) brightness(1.02)',turf:0x385233,kerbBorder:0x15803d,tecPro:[0xd4141c,0xf4f4f4],rcAccent:0xff2d3d},
+ marina:{sky:['#02040d','#091229','#192c54','#2c2246','#0b101d',14,.14,0],grade:'contrast(1.14) saturate(1.14)',kerbBorder:0x00d2be,tecPro:[0x2a5bd7,0xf4f4f4],rcAccent:0x38e8ff,paddock:false},
+ bahrain:{sky:['#030510','#0f1328','#2a2342','#4a3438','#1c1714',10,.12,0],grade:'contrast(1.12) saturate(1.10)',kerbBorder:0xd4141c,tecPro:[0xd4141c,0xf4f4f4],rcAccent:0xffa63a},
+ jeddah:{sky:['#02040c','#08132b','#162b52','#243554','#081826',12,.12,0],grade:'contrast(1.14) saturate(1.12)',kerbBorder:0x00d2be,tecPro:[0x1b7a5a,0xf4f4f4],rcAccent:0x6fd8ff,paddock:false}
+};
+function trackCfg(id){return Object.assign({},TRACK_BASELINE,TRACK_THEMES[id]||{})}
 /* Sepang trackside sponsors (fictional brands): [name, background, text colour] */
 const SP=[['SKYLINE AIR','#0a7d7a','#ffffff'],['PARCELIA','#ffcc00','#d40511'],['LUMIERE PARIS','#4a2e17','#f3d58a'],['MARITIMA','#0b2a5b','#ffffff'],['NEXTBYTE','#d01030','#ffffff'],['AETHER TYRES','#ffcc00','#111111'],['CLOUDWORKS','#1b8ae0','#ffffff'],['HOPSTAR','#0a7a3c','#ffffff'],['PETRA OIL','#00875a','#ffffff']];
 const TRACKS=[

@@ -258,3 +258,19 @@ body.touch #lights{top:calc(max(6px,env(safe-area-inset-top)) + 56px);padding:5p
 /* ---- Phase 2: Lightweight Mobile GPU Compositor (removes heavy blur & FX vignette on touch) ---- */
 body.touch .glass,body.touch #nav.glass-menu,body.touch .btn,body.touch #res.split #resin,body.touch #winBadge{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(10,15,26,.84)!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important}
 body.touch #fx{display:none!important}
+
+/* ---- v1.2.0 Unmistakable Interactive Button Press & Selection Feedback (PC & Mobile) ---- */
+.btn,.mi,.qbtn,.mcard,.tcard,.dcard{touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .09s ease,background .12s ease,border-color .12s ease,box-shadow .12s ease}
+.btn:focus-visible,.mi:focus-visible,.qbtn:focus-visible,.mcard:focus-visible,.tcard:focus-visible,.dcard:focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 4px rgba(255,59,48,.55)}
+.btn.on,.btn.is-selected,.tcard.on,.dcard.on,.tcard.is-selected,.dcard.is-selected{background:rgba(255,59,48,.88)!important;border-color:#fff!important;color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.45),0 0 16px rgba(255,59,48,.5)!important}
+.btn:active,.btn.is-pressed,.qbtn:active,.qbtn.is-pressed,.mcard:active,.mcard.is-pressed,.tcard:active,.tcard.is-pressed,.dcard:active,.dcard.is-pressed{background:rgba(255,74,64,.92)!important;border-color:#fff!important;color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.85),0 0 20px rgba(255,59,48,.72)!important;transform:scale(.95)!important}
+.mi:active,.mi.is-pressed{background:rgba(255,59,48,.82)!important;border-color:#fff!important;color:#fff!important;box-shadow:inset 4px 0 0 #fff,0 0 18px rgba(255,59,48,.65)!important;transform:translateX(3px) scale(.965)!important}
+#tc .tb.p,#tc .tb.is-pressed{border-color:#fff!important;box-shadow:0 0 0 3px rgba(255,255,255,.78),0 0 20px rgba(255,255,255,.45)!important;transform:scale(.93)!important}
+#tG.p,#tG.is-pressed{box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 22px rgba(34,224,102,.85)!important}
+#tB.p,#tB.is-pressed{box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 22px rgba(255,59,48,.85)!important}
+#tE.p,#tE.is-pressed{box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 22px rgba(56,182,255,.85)!important}
+/* Prevent sticky accidental hover highlights on touch devices */
+@media (hover:none){
+ .btn:hover:not(.on):not(.go):not(.is-pressed),.qbtn:hover:not(.is-pressed),.mcard:hover:not(.is-pressed),.tcard:hover:not(.on):not(.is-pressed),.dcard:hover:not(.on):not(.is-pressed){transform:none!important;background:rgba(255,255,255,.11)}
+ .mi:hover:not(.sel):not(.is-pressed){transform:none!important;background:none;border-color:transparent}
+}
