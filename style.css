@@ -175,48 +175,51 @@ th{text-transform:uppercase;font-size:12px;opacity:.75;letter-spacing:.8px}
 #lnb{top:196px}#camb{position:absolute;right:12px;top:226px;font-size:12px;padding:4px 12px}#tgl{top:256px}
 .qbtn{font-family:"Chakra Petch",Arial,sans-serif;border-radius:8px}
 
-/* ---- v1.0.4 Mobile Landscape, Safe Area & Touch-Friendly Layout ---- */
+/* ---- Phase 1: Ultra-Compact, Non-Blocking Mobile HUD & Touch Layout (Desktop PC untouched) ---- */
+/* Easy Mobile vs PC HUD tuning variables */
+:root{--mob-btn:58px;--mob-sm:44px;--mob-gap:8px;--mob-alpha:.36;--mob-hud-bg:rgba(8,12,20,.54)}
 html,body{width:100vw;height:100vh;height:100dvh;touch-action:none;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
 #gl{width:100vw;height:100vh;height:100dvh;touch-action:none}
-#rot{display:none;position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);z-index:65;padding:8px 14px;gap:10px;align-items:center;font-size:13px;font-weight:700;white-space:nowrap;pointer-events:auto}
+#rot{display:none;position:fixed;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);z-index:65;padding:6px 12px;gap:8px;align-items:center;font-size:12px;font-weight:700;white-space:nowrap;pointer-events:auto}
 #rot.hid{display:none!important}
 @media (max-width:760px) and (orientation:portrait){body.touch #rot{display:flex}}
-/* Default touch button positions (safe-area aware, >=56px hit targets) */
+/* Sleek corner-tucked touch controls (>=44px hit targets, low opacity so track & apexes stay clear) */
 #tc{position:fixed;inset:0;pointer-events:none;z-index:12}
-#tc .tb{width:76px;height:76px;min-width:48px;min-height:48px;font-size:13px;letter-spacing:.6px;background:rgba(12,18,30,.52);border:1.5px solid rgba(255,255,255,.32);box-shadow:0 6px 18px rgba(0,0,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:transform .08s ease,background .08s ease}
-#tc .tb.p{background:rgba(255,59,48,.68);border-color:#fff;transform:scale(.95)}
-#tc .tb.smt{width:54px;height:54px;font-size:11px;border-radius:16px}
-#tL{left:max(14px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom))}
-#tR{left:calc(max(14px,env(safe-area-inset-left)) + 88px);bottom:max(16px,env(safe-area-inset-bottom))}
-#tG{right:max(14px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));background:rgba(24,168,78,.48)!important}
-#tG.p{background:rgba(34,224,102,.8)!important}
-#tB{right:calc(max(14px,env(safe-area-inset-right)) + 88px);bottom:max(16px,env(safe-area-inset-bottom));background:rgba(218,38,48,.48)!important}
-#tB.p{background:rgba(255,59,48,.82)!important}
-#tE{right:max(14px,env(safe-area-inset-right));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 88px);background:rgba(36,144,235,.48)!important}
-#tE.p{background:rgba(56,182,255,.85)!important}
-#tCam{left:max(14px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + 88px)}
-#tPit{left:calc(max(14px,env(safe-area-inset-left)) + 66px);bottom:calc(max(16px,env(safe-area-inset-bottom)) + 88px)}
-/* Mobile / compact landscape HUD overrides (placed last so nothing overrides them) */
-body.touch #hint{display:none!important}
-body.touch #tower{display:none!important}
-body.touch #lnb,body.touch #camb,body.touch #tgl{display:none!important}
-body.touch #qb{top:max(8px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));gap:6px}
-body.touch .qbtn{min-height:44px;padding:6px 12px;font-size:12px}
-body.touch #lapi{left:max(10px,env(safe-area-inset-left));top:max(8px,env(safe-area-inset-top));padding:6px 10px;font-size:12px}
-body.touch #mm{left:max(10px,env(safe-area-inset-left));right:auto;top:calc(max(8px,env(safe-area-inset-top)) + 40px);width:84px;height:84px;border-radius:10px}
-body.touch #tele{left:50%;right:auto;bottom:max(8px,env(safe-area-inset-bottom));top:auto;transform:translateX(-50%);width:214px;padding:6px 10px 5px;border-radius:12px}
-body.touch #rev{gap:3px;margin-bottom:4px}body.touch #rev i{width:6px;height:6px}
-body.touch #gear{width:30px;height:32px;font-size:21px}body.touch #spd{font-size:28px;min-width:48px}
-body.touch .ped{margin:4px 2px 2px}body.touch #tele .rw2{margin-top:4px;gap:6px}body.touch #tinfo{font-size:9px;margin-top:2px}
-body.touch #msg{top:calc(max(8px,env(safe-area-inset-top)) + 44px);font-size:11px;padding:5px 10px}
-body.touch #lights{top:calc(max(8px,env(safe-area-inset-top)) + 68px);padding:6px 10px}body.touch #lights i{width:22px;height:22px}
+#tc .tb{width:var(--mob-btn);height:var(--mob-btn);min-width:44px;min-height:44px;font-size:11px;font-weight:800;letter-spacing:.5px;color:rgba(255,255,255,.92);background:rgba(10,16,28,var(--mob-alpha));border:1.5px solid rgba(255,255,255,.28);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;transition:transform .06s ease,background .06s ease}
+#tc .tb.p{background:rgba(255,59,48,.72);border-color:#fff;transform:scale(.94)}
+#tc .tb.smt{width:var(--mob-sm);height:var(--mob-sm);font-size:10px;border-radius:12px}
+#tL{left:max(10px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom))}
+#tR{left:calc(max(10px,env(safe-area-inset-left)) + var(--mob-btn) + var(--mob-gap));bottom:max(10px,env(safe-area-inset-bottom))}
+#tG{right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));background:rgba(24,168,78,.36)!important;border-color:rgba(72,235,130,.5)}
+#tG.p{background:rgba(34,224,102,.78)!important;border-color:#fff}
+#tB{right:calc(max(10px,env(safe-area-inset-right)) + var(--mob-btn) + var(--mob-gap));bottom:max(10px,env(safe-area-inset-bottom));background:rgba(218,38,48,.36)!important;border-color:rgba(255,100,110,.5)}
+#tB.p{background:rgba(255,59,48,.8)!important;border-color:#fff}
+#tE{right:max(10px,env(safe-area-inset-right));bottom:calc(max(10px,env(safe-area-inset-bottom)) + var(--mob-btn) + var(--mob-gap));background:rgba(36,144,235,.36)!important;border-color:rgba(90,190,255,.5)}
+#tE.p{background:rgba(56,182,255,.82)!important;border-color:#fff}
+#tCam{left:max(10px,env(safe-area-inset-left));bottom:calc(max(10px,env(safe-area-inset-bottom)) + var(--mob-btn) + var(--mob-gap))}
+#tPit{left:calc(max(10px,env(safe-area-inset-left)) + var(--mob-sm) + var(--mob-gap));bottom:calc(max(10px,env(safe-area-inset-bottom)) + var(--mob-btn) + var(--mob-gap))}
+/* Mobile-only minimal edge-tucked HUD (scoped strictly to body.touch — Desktop PC untouched) */
+body.touch #hint,body.touch #tower,body.touch #lnb,body.touch #camb,body.touch #tgl{display:none!important}
+body.touch #qb{top:max(6px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));gap:4px}
+body.touch .qbtn{min-height:36px;padding:4px 9px;font-size:11px;background:var(--mob-hud-bg);backdrop-filter:none;-webkit-backdrop-filter:none;border-color:rgba(255,255,255,.18);box-shadow:none}
+body.touch #lapi{left:max(8px,env(safe-area-inset-left));top:max(6px,env(safe-area-inset-top));padding:4px 9px;font-size:11px;background:var(--mob-hud-bg);backdrop-filter:none;-webkit-backdrop-filter:none;border-radius:8px;box-shadow:none}
+body.touch #mm{left:max(8px,env(safe-area-inset-left));right:auto;top:calc(max(6px,env(safe-area-inset-top)) + 30px);width:64px;height:64px;border-radius:8px;background:rgba(8,12,20,.46);border-color:rgba(255,255,255,.18);box-shadow:none;opacity:.82}
+/* Ultra-sleek bottom-edge telemetry pill (~48px tall vs 103px before) */
+body.touch #tele{left:50%;right:auto;bottom:max(6px,env(safe-area-inset-bottom));top:auto;transform:translateX(-50%);width:auto;min-width:154px;padding:4px 10px 5px;border-radius:10px;background:var(--mob-hud-bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid rgba(255,255,255,.16);box-shadow:none}
+body.touch #rev{gap:2px;margin-bottom:3px}body.touch #rev i{width:5px;height:3px;border-radius:2px;box-shadow:none}
+body.touch #tele .rw{gap:6px}
+body.touch #gear{width:24px;height:24px;font-size:16px;border-radius:5px}
+body.touch #spd{font-size:22px;min-width:38px;line-height:1}
+body.touch #tele .rw small{font-size:9px;opacity:.7}
+body.touch .ped,body.touch #tinfo{display:none!important}
+body.touch #tele .rw2{margin-top:3px;gap:5px}body.touch #tele .bar{max-width:68px;height:4px}
+body.touch #drs{font-size:9px;padding:1px 5px}body.touch #tyb{width:16px;height:16px;font-size:9px}
+body.touch #msg{top:calc(max(6px,env(safe-area-inset-top)) + 34px);font-size:10px;padding:3px 8px;background:var(--mob-hud-bg)}
+body.touch #lights{top:calc(max(6px,env(safe-area-inset-top)) + 56px);padding:5px 8px;background:var(--mob-hud-bg);backdrop-filter:none;-webkit-backdrop-filter:none}body.touch #lights i{width:18px;height:18px}
 @media (max-height:460px){
  #nav.glass-menu{left:max(14px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));padding:12px 14px 10px;width:min(270px,72vw)}
  #nav.glass-menu .logo{font-size:22px;margin-bottom:4px}.mi{font-size:14px;padding:5px 10px}.mi.s2{font-size:12px;padding:4px 10px}#nd{display:none}
  .pg{max-height:84dvh;padding:12px}
- #tc .tb{width:64px;height:64px;font-size:12px}#tc .tb.smt{width:48px;height:48px;font-size:10px}
- #tR{left:calc(max(14px,env(safe-area-inset-left)) + 74px)}#tB{right:calc(max(14px,env(safe-area-inset-right)) + 74px)}
- #tE{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 74px)}#tCam,#tPit{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 74px)}#tPit{left:calc(max(14px,env(safe-area-inset-left)) + 58px)}
 }
 
 /* ---- v1.0.5 Split-Screen Post-Race Results (Left) + Live Winning Outlap (Right) ---- */
