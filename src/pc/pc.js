@@ -4,8 +4,8 @@ window.APEX_PLATFORM = {
  isMobile: false,
  // Desktop PC high-quality rendering & HUD tuning (edit here without affecting Mobile)
  perf: {
-  dprCap: 1.5,
-  shadowSize: 2048,
+  dprCap: 1.25,
+  shadowSize: 1024,
   aniso: 16,
   sparks: 400,
   ersP: 300,
