@@ -90,7 +90,7 @@ class Game{
  constructor(){
   this.set={ev:.7,sv:.7,mu:false,shadows:true,detail:'high',fov:75,steer:1,line:true,bsz:1.15};this.sel={team:0,tire:'M',track:0,laps:3,mode:0};
   const isMob=this.isMob=('ontouchstart' in window||navigator.maxTouchPoints>0||Math.min(innerWidth,innerHeight)<=600);
-  this.view=isMob?3:0;this.keys={};this.sfx=new Sfx();this.sfx.ev=.7;this.sfx.sv=.7;this.state='menu';this.cars=[];this.cam={a:0};this.laps=3;this.msgT=0;this.tick=0;
+  this.view=0;this.keys={};this.sfx=new Sfx();this.sfx.ev=.7;this.sfx.sv=.7;this.state='menu';this.cars=[];this.cam={a:0};this.laps=3;this.msgT=0;this.tick=0;
   const prof=this.prof=PERF_CFG[isMob?'mobile':'desktop'];
   const R=this.r=new THREE.WebGLRenderer({canvas:$('gl'),antialias:true,powerPreference:'high-performance'});R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;ANISO=Math.max(4,Math.min(prof.aniso,+R.capabilities.getMaxAnisotropy()||4));R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.15;
   $('gl').addEventListener('webglcontextlost',e=>{e.preventDefault();this.ctxLost=true;this.msg('GRAPHICS CONTEXT LOST · RESTORING…')},false);
