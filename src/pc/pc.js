@@ -14,7 +14,7 @@ window.APEX_PLATFORM = {
   crowdWave: true,
   fxVignette: true
  },
- defaultCam: 0,    // 0 = Wide Chase (1 = Close 3rd-Person, 2 = T-Cam, 3 = Halo, 4 = Eagle Eye)
+ defaultCam: 1,    // 1 = Close 3rd-Person Chase (0 = Wide Chase, 2 = T-Cam, 3 = Halo, 4 = Eagle Eye)
  bind(G) {
   document.body.classList.remove('touch');
   document.body.classList.add('pc');
