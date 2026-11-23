@@ -4,6 +4,16 @@ All notable changes, bug fixes, visual upgrades, and feature patches for **Apex 
 
 ---
 
+## [v1.0.6] — Live Scoreboard With Tyre Compound (PC & Mobile), Adjustable Touch Buttons & Mobile Bird's-Eye Camera
+### Added & Improved
+- **Live Scoreboard Tyre Badges (`game.js`, `style.css`)**: Added color-coded active tyre compound pills (`S` red, `M` yellow, `H` white) next to every driver in `#tower` on **both PC and Mobile** (live-updates after pit stops).
+- **Compact Mobile Scoreboard (`style.css`, `game.js`)**: Restored `#tower` on mobile top-left below `#lapi` (showing Top 5 + player row cleanly at `10px`), and moved compact `58×58px` `#mm` minimap to top-right below `#qb`.
+- **Adjustable Touch Button Size (`index.html`, `style.css`, `game.js`)**: Added **Touch button size** slider (`0.8x`–`1.4x`, default `1.15x` → `~69px` comfortable side pads for easy Gas/Brake/Turn pressing) in Settings → Controls, persisted in `localStorage`.
+- **Mobile Default Bird's-Eye Camera (`game.js`)**: Automatically defaults mobile players to **Eagle Eye / Bird's-Eye** view (`this.view = 3`) while keeping Desktop PC at **Wide Chase** (`this.view = 0`).
+- **Small / Landscape Mobile Menu UI (`style.css`)**: Optimized menus, team/driver cards, and modals under `@media (max-height:500px),(max-width:700px)` so all screens fit cleanly without clipping.
+
+---
+
 ## [v1.0.5] — Split-Screen Post-Race Results + Live Winning Driver Outlap Celebration
 ### Added & Improved
 - **Left-Side Broadcast Results Panel (`style.css`, `game.js`)**: Docked `#res.split` cleanly on the left (`min(450px, 46vw)`, compact on mobile landscape) with a directional gradient instead of a dark blocking modal, plus a **Race Again** button alongside **Next Circuit** and **Main Menu**.
