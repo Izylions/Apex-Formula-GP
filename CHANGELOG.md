@@ -4,6 +4,18 @@ All notable changes, bug fixes, visual upgrades, and feature patches for **Apex 
 
 ---
 
+## [v1.1.0] — Modular PC/Mobile Architecture, Phase 3 Cross-Play MP Sync & Close 3rd-Person Cam
+### Added & Refactored
+- **Shared Core + Platform-Separated Architecture**: Split codebase into `src/core/` (`data.js`, `world.js`, `engine.js`, `base.css`), `src/pc/` (`pc.js`, `pc.css`), and `src/mobile/` (`mobile.js`, `mobile.css`) with automatic platform routing in `index.html` (`?mode=pc` / `?mode=mobile` override), direct `mobile.html` entry, and architecture docs in `README.md`.
+- **Phase 3 Cross-Play Multiplayer Sync (PC ↔ Mobile)**:
+  - Fixed-timestep physics accumulator (`1/60s`, max 4 substeps) so 30–60 FPS mobile and 60–144+ FPS PC clients simulate identically.
+  - Batched quantized network snapshots (`20 Hz`, single WebRTC packet per tick instead of 11 separate car messages — 11× fewer packets, ~70% smaller payload, including live tyre compound sync).
+  - 4-snapshot interpolation buffer with adaptive RTT delay + bounded velocity extrapolation (`<= 120ms`) and soft correction (hard snap only > `130` units) to eliminate rubber-banding.
+  - Added live RTT ping/pong (`1.5s`) and toggleable `#netDbg` HUD (`F3` or Settings → Controls) showing Platform, FPS, Net Hz, and Ping ms.
+- **New 5th Camera View — Close 3rd-Person (`Close 3P`)**: Added tight rear-wing chase camera (`this.view = 1`, cycle: Wide Chase → Close 3rd-Person → T-Cam → Halo → Eagle Eye).
+
+---
+
 ## [v1.0.6] — Live Scoreboard With Tyre Compound (PC & Mobile), Adjustable Touch Buttons & Mobile Bird's-Eye Camera
 ### Added & Improved
 - **Live Scoreboard Tyre Badges (`game.js`, `style.css`)**: Added color-coded active tyre compound pills (`S` red, `M` yellow, `H` white) next to every driver in `#tower` on **both PC and Mobile** (live-updates after pit stops).

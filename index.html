@@ -1,5 +1,14 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Apex GP 3D</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="src/core/base.css">
+<script>
+// Platform router: auto-detects PC vs Mobile (supports ?mode=pc or ?mode=mobile override)
+(function(){
+ var q=new URLSearchParams(location.search).get('mode');
+ var mob=q==='mobile'||(q!=='pc'&&('ontouchstart' in window||navigator.maxTouchPoints>0||Math.min(innerWidth,innerHeight)<=600));
+ window.__APEX_MODE=mob?'mobile':'pc';
+ document.write('<link rel="stylesheet" href="src/'+(mob?'mobile/mobile.css':'pc/pc.css')+'">');
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
@@ -10,7 +19,7 @@
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script></head><body>
 <canvas id="gl"></canvas><div id="fx"></div><div id="fade"></div><div id="err" onclick="this.style.display='none'"></div><div id="rot" class="glass" onclick="this.classList.add('hid')"><span>↻ Rotate to landscape for best racing view</span><button type="button" class="btn sm">OK</button></div>
 <div id="qb"><button class="qbtn" id="qS">⚙ Settings</button><button class="qbtn" id="qB">‹ Back</button><button class="qbtn" id="qM">✕ Exit</button></div>
-<div class="scr" id="s_main"><div id="nav" class="glass-menu"><div class="logo">APEX<span>GP</span> <small style="font-size:11px;font-style:normal;letter-spacing:1px;opacity:.65;vertical-align:middle">v1.0.6</small></div>
+<div class="scr" id="s_main"><div id="nav" class="glass-menu"><div class="logo">APEX<span>GP</span> <small style="font-size:11px;font-style:normal;letter-spacing:1px;opacity:.65;vertical-align:middle">v1.1.0</small></div>
 <button class="mi" id="bSP" data-d="Race solo against the AI: Grand Prix or a custom multi-circuit event.">Single Player</button>
 <button class="mi" id="bMP" data-d="Host a 4-letter room or join a friend's code for a peer-to-peer online race.">Multiplayer</button>
 <div class="sep"></div>
@@ -40,7 +49,7 @@
 <div id="set" class="modal" style="display:none"><div class="glass mc">
 <div class="tabs"><button class="btn sm on" data-t="c">Controls</button><button class="btn sm" data-t="a">Audio</button><button class="btn sm" data-t="g">Graphics</button><button class="btn sm" data-t="h">How to Play</button></div>
 <div id="t_c"><p><span class="kc">W</span><span class="kc">↑</span> Accelerate &nbsp; <span class="kc">S</span><span class="kc">↓</span> Brake / reverse</p><p><span class="kc">A</span><span class="kc">D</span><span class="kc">←</span><span class="kc">→</span> Steer</p><p><span class="kc">Space</span> Hold for ERS boost &nbsp; <span class="kc">C</span> Camera &nbsp; <span class="kc">P</span>/<span class="kc">Esc</span> Pause &nbsp; <span class="kc">1</span><span class="kc">2</span><span class="kc">3</span> Next pit tyre &nbsp; <span class="kc">M</span> Mute &nbsp; <span class="kc">L</span> Racing line</p>
-<label class="s">Steering sensitivity <b id="v_st">1.0</b><input type="range" id="s_st" min="0.5" max="1.5" step="0.05" value="1"></label><label class="s">Touch button size <b id="v_bsz">1.15x</b><input type="range" id="s_bsz" min="0.8" max="1.4" step="0.05" value="1.15"></label><h4>Season, difficulty &amp; assists</h4><div class="ar"><span>F1 Season Roster</span><div class="chips" data-k="yr" id="yrc"></div></div><div class="ar"><span>AI Difficulty</span><div class="chips" data-k="diff" id="diffc"></div></div><div class="ar"><span>Steering assist</span><div class="chips" data-k="sa" id="sac"></div></div><div class="ar"><span>Braking assist</span><div class="chips" data-k="ba" id="bac"></div></div><div class="ar"><span>Racing line <span class="kc">L</span></span><div class="chips" data-k="ln" id="lnc"></div></div><div class="ar"><span>ERS assist (auto boost)</span><div class="chips" data-k="ea" id="eac"></div></div></div>
+<label class="s">Steering sensitivity <b id="v_st">1.0</b><input type="range" id="s_st" min="0.5" max="1.5" step="0.05" value="1"></label><label class="s">Touch button size <b id="v_bsz">1.15x</b><input type="range" id="s_bsz" min="0.8" max="1.4" step="0.05" value="1.15"></label><label class="s"><input type="checkbox" id="s_dbg"> Network / FPS debug HUD (F3)</label><h4>Season, difficulty &amp; assists</h4><div class="ar"><span>F1 Season Roster</span><div class="chips" data-k="yr" id="yrc"></div></div><div class="ar"><span>AI Difficulty</span><div class="chips" data-k="diff" id="diffc"></div></div><div class="ar"><span>Steering assist</span><div class="chips" data-k="sa" id="sac"></div></div><div class="ar"><span>Braking assist</span><div class="chips" data-k="ba" id="bac"></div></div><div class="ar"><span>Racing line <span class="kc">L</span></span><div class="chips" data-k="ln" id="lnc"></div></div><div class="ar"><span>ERS assist (auto boost)</span><div class="chips" data-k="ea" id="eac"></div></div></div>
 <div id="t_a" hidden><div class="ar"><span>Engine sound</span><div class="chips" data-k="eng" id="engc"></div></div><label class="s">Engine volume<input type="range" id="s_ev" min="0" max="1" step="0.05" value="0.7"></label><label class="s">SFX volume<input type="range" id="s_sv" min="0" max="1" step="0.05" value="0.7"></label><label class="s"><input type="checkbox" id="s_mus" checked> Menu music</label><label class="s"><input type="checkbox" id="s_mu"> Mute all sound</label></div>
 <div id="t_g" hidden><label class="s"><input type="checkbox" id="s_sh" checked> Shadows</label><h4>Track detail</h4><div class="chips"><button class="btn sm" id="dl">Low</button><button class="btn sm on" id="dh">High</button></div><label class="s">Camera FOV <b id="v_fov">75</b><input type="range" id="s_fov" min="60" max="100" step="1" value="75"></label></div>
 <div id="t_h" hidden><div class="gr"><div class="gc"><b>📡 Auto-DRS</b><p>Inside a DRS zone and within 1.0 s of the car ahead, your rear flap opens by itself for extra top speed. It closes when you brake.</p></div><div class="gc"><b>⚡ ERS boost</b><p>Braking recharges the battery. Hold <span class="kc">Space</span> on a straight for a blue-trail power boost.</p></div><div class="gc"><b>🔧 Pit stops</b><p>Drive into the pit lane on the right of the start straight, stop in your team's colour-marked box and wait 3 s: new tyres and a repaired wing. AI cars pit when their tyres wear out. Steering and braking assists (Off/Low/High) and the racing line (L) are in Settings.</p></div><div class="gc"><b>🛞 Tyre grip</b><p><span style="color:#ff2a2a">●</span> Soft grips most but wears fast. <span style="color:#ffd400">●</span> Medium balances. <span style="color:#f2f2f2">●</span> Hard lasts. Worn tyres lose cornering grip.</p></div></div></div>
@@ -50,9 +59,10 @@
 <div id="tc"><div class="tb" id="tL">&#9664;</div><div class="tb" id="tR">&#9654;</div><div class="tb" id="tB">BRAKE</div><div class="tb" id="tG">GAS</div><div class="tb smt" id="tE">ERS</div><div class="tb smt" id="tCam">CAM</div><div class="tb smt" id="tPit">TYRE</div></div>
 <canvas id="mm" width="180" height="180"></canvas><button class="btn sm" id="lnb">Line: ON (L)</button><button class="btn sm" id="camb">Cam: Chase (C)</button><button class="btn sm" id="tgl">Touch pad</button><div id="hint" class="glass">Click the game once, then: <b>W/↑</b> gas · <b>S/↓</b> brake · <b>A D/← →</b> steer · <b>Space</b> boost · <b>C</b> camera · <b>L</b> line</div><button class="btn sm" id="pbtn">⏸ Menu</button></div>
 <div id="pm" class="modal" style="display:none"><div class="glass pad" style="width:min(360px,90vw)"><h2>Paused</h2><button class="btn big" id="pr">Resume</button><button class="btn big" id="pc">Camera</button><button class="btn big" id="ps">Settings</button><button class="btn big" id="pq">Quit to main menu</button></div></div>
-<div id="res" class="modal" style="display:none"><div class="glass mc" id="resin"></div></div><div id="winBadge"><div><b id="wbName"></b><span id="wbSub">CELEBRATION OUTLAP · LIVE</span></div></div>
-<!-- load order matters: data -> world -> game (globals are shared between classic scripts) -->
-<script src="data.js"></script>
-<script src="world.js"></script>
-<script src="game.js"></script>
+<div id="res" class="modal" style="display:none"><div class="glass mc" id="resin"></div></div><div id="winBadge"><div><b id="wbName"></b><span id="wbSub">CELEBRATION OUTLAP · LIVE</span></div></div><div id="netDbg"></div>
+<!-- Modular load order: core/data -> core/world -> platform adapter (pc or mobile) -> core/engine -->
+<script src="src/core/data.js"></script>
+<script src="src/core/world.js"></script>
+<script>document.write('<script src="src/'+(window.__APEX_MODE==='mobile'?'mobile/mobile.js':'pc/pc.js')+'"><\/script>');</script>
+<script src="src/core/engine.js"></script>
 </body></html>
