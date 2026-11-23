@@ -215,8 +215,8 @@ body.touch #tower .tr span{font-size:9.5px;justify-content:flex-start;overflow:h
 body.touch #tower .tr .ty{width:13px;height:13px;font-size:8.5px}
 body.touch #tower .tr em{min-width:28px;font-size:9px}
 body.touch #tower .tr.mhid{display:none}
-/* Compact minimap moved top-right below #qb on mobile so it never crowds scoreboard */
-body.touch #mm{left:auto;right:max(8px,env(safe-area-inset-right));top:calc(max(6px,env(safe-area-inset-top)) + 42px);width:58px;height:58px;border-radius:8px;background:rgba(8,12,20,.46);border-color:rgba(255,255,255,.18);box-shadow:none;opacity:.82}
+/* Compact minimap moved top-right below #qb on mobile — enlarged 92x92px for crisp corner reading */
+body.touch #mm{left:auto;right:max(8px,env(safe-area-inset-right));top:calc(max(6px,env(safe-area-inset-top)) + 42px);width:92px;height:92px;border-radius:10px;background:rgba(8,12,20,.62);border:1.5px solid rgba(255,255,255,.26);box-shadow:0 4px 12px rgba(0,0,0,.35);opacity:.94}
 /* Ultra-sleek bottom-edge telemetry pill */
 body.touch #tele{left:50%;right:auto;bottom:max(6px,env(safe-area-inset-bottom));top:auto;transform:translateX(-50%);width:auto;min-width:148px;padding:4px 9px 5px;border-radius:10px;background:var(--mob-hud-bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid rgba(255,255,255,.16);box-shadow:none}
 body.touch #rev{gap:2px;margin-bottom:3px}body.touch #rev i{width:5px;height:3px;border-radius:2px;box-shadow:none}
@@ -255,22 +255,50 @@ body.touch #lights{top:calc(max(6px,env(safe-area-inset-top)) + 56px);padding:5p
  #res.split #resin{width:min(360px,49vw);padding:10px 12px}#res.split h2{font-size:14px}#res.split p{font-size:11px}#res.split td,#res.split th{padding:2px 4px;font-size:11px}
  #winBadge{padding:7px 12px}#winBadge b{font-size:11px}#winBadge span{font-size:10px}
 }
-/* ---- Phase 2: Lightweight Mobile GPU Compositor (removes heavy blur & FX vignette on touch) ---- */
-body.touch .glass,body.touch #nav.glass-menu,body.touch .btn,body.touch #res.split #resin,body.touch #winBadge{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(10,15,26,.84)!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important}
+/* ---- Phase 2: Lightweight Mobile GPU Compositor (removes heavy blur & FX vignette, preserves active/CTA button colors!) ---- */
+body.touch .glass,body.touch #nav.glass-menu,body.touch #res.split #resin,body.touch #winBadge{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(10,15,26,.88)!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important}
+body.touch .btn:not(.on):not(.go):not(.go2):not(.is-selected):not(.is-pressed):not(.tchip){backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(16,22,36,.84);box-shadow:none}
 body.touch #fx{display:none!important}
+
+/* ---- v1.2.2 Pro Selection UI (Driver Header, Rich Tyre Compound Cards, Clear Active Highlights) ---- */
+.dhdr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.dhdr h2{margin:0}.dhdr .sub{margin:2px 0 0;font-size:12px}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.tchip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 6px!important;border-radius:12px!important;background:rgba(14,20,34,.78);border:2px solid rgba(255,255,255,.18);text-align:center;line-height:1.2}
+.tchip .tc-top{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:800;letter-spacing:.6px;color:#fff}
+.tchip .tc-dot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 6px currentColor}
+.tchip .tc-meta{font-size:10px;font-weight:600;color:#c8d3e6;letter-spacing:.2px}
+.tchip.on,.tchip.is-selected{transform:translateY(-1px);color:#fff!important}
+.tchip[data-v="S"].on,.tchip[data-v="S"].is-selected{background:linear-gradient(180deg,rgba(255,42,42,.42),rgba(140,12,18,.88))!important;border-color:#ff4d4d!important;box-shadow:0 0 0 2px rgba(255,77,77,.45),0 0 18px rgba(255,42,42,.55)!important}
+.tchip[data-v="M"].on,.tchip[data-v="M"].is-selected{background:linear-gradient(180deg,rgba(255,212,0,.38),rgba(128,96,0,.88))!important;border-color:#ffd400!important;box-shadow:0 0 0 2px rgba(255,212,0,.45),0 0 18px rgba(255,212,0,.45)!important}
+.tchip[data-v="H"].on,.tchip[data-v="H"].is-selected{background:linear-gradient(180deg,rgba(242,244,248,.34),rgba(78,86,102,.90))!important;border-color:#ffffff!important;box-shadow:0 0 0 2px rgba(255,255,255,.45),0 0 18px rgba(242,244,248,.45)!important}
+.dcard{position:relative;flex:1;padding:8px 8px 7px;border:2px solid rgba(255,255,255,.16);background:rgba(12,18,30,.72)}
+.dcard .sel-tag{display:none;position:absolute;top:6px;left:6px;padding:2px 6px;border-radius:999px;background:#ff3b30;color:#fff;font-size:9px;font-weight:800;letter-spacing:.6px}
+.dcard.on .sel-tag{display:inline-block}
+.dcard.on{background:linear-gradient(180deg,rgba(255,59,48,.38),rgba(120,16,22,.82))!important;border-color:#ff5a52!important;box-shadow:0 0 0 2px rgba(255,255,255,.5),0 0 20px rgba(255,59,48,.5)!important}
+/* Mobile landscape split-screen selection so left card never clips or hides rotating 3D car on the right */
+@media (max-height:500px){
+ #s_team .pg,#s_driver .pg{width:min(385px,50vw)!important;max-height:88dvh!important;padding:9px 11px!important}
+ #s_driver .dhdr h2{font-size:15px}#s_driver .dhdr .sub{font-size:10px}
+ #s_driver .drs2{gap:7px;margin:6px 0}#s_driver .dcard{padding:5px 6px}#s_driver .dcard canvas{width:64px;height:78px;margin-bottom:3px}#s_driver .dcard b{font-size:11.5px}#s_driver .dcard small{font-size:10px}
+ #s_driver h4{margin:5px 0 4px;font-size:10px}
+ .tgrid{gap:5px}.tchip{padding:5px 4px!important}.tchip .tc-top{font-size:10.5px}.tchip .tc-meta{font-size:8.5px}
+ #s_driver .btn.big.go{margin-top:7px;padding:7px 12px;font-size:12.5px}
+}
 
 /* ---- v1.2.0 Unmistakable Interactive Button Press & Selection Feedback (PC & Mobile) ---- */
 .btn,.mi,.qbtn,.mcard,.tcard,.dcard{touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .09s ease,background .12s ease,border-color .12s ease,box-shadow .12s ease}
 .btn:focus-visible,.mi:focus-visible,.qbtn:focus-visible,.mcard:focus-visible,.tcard:focus-visible,.dcard:focus-visible{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 4px rgba(255,59,48,.55)}
-.btn.on,.btn.is-selected,.tcard.on,.dcard.on,.tcard.is-selected,.dcard.is-selected{background:rgba(255,59,48,.88)!important;border-color:#fff!important;color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.45),0 0 16px rgba(255,59,48,.5)!important}
-.btn:active,.btn.is-pressed,.qbtn:active,.qbtn.is-pressed,.mcard:active,.mcard.is-pressed,.tcard:active,.tcard.is-pressed,.dcard:active,.dcard.is-pressed{background:rgba(255,74,64,.92)!important;border-color:#fff!important;color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.85),0 0 20px rgba(255,59,48,.72)!important;transform:scale(.95)!important}
-.mi:active,.mi.is-pressed{background:rgba(255,59,48,.82)!important;border-color:#fff!important;color:#fff!important;box-shadow:inset 4px 0 0 #fff,0 0 18px rgba(255,59,48,.65)!important;transform:translateX(3px) scale(.965)!important}
+.btn.on:not(.tchip),.btn.is-selected:not(.tchip),.tcard.on,.tcard.is-selected{background:linear-gradient(180deg,#ff4d42,#d9231a)!important;border-color:#fff!important;color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 0 16px rgba(255,59,48,.58)!important}
+.btn.go,.btn.go2{background:linear-gradient(180deg,#ff4450,#d61c26)!important;border-color:rgba(255,255,255,.65)!important;color:#fff!important;box-shadow:0 6px 18px rgba(232,36,44,.42)}
+.btn:active,.btn.is-pressed,.qbtn:active,.qbtn.is-pressed,.mcard:active,.mcard.is-pressed,.tcard:active,.tcard.is-pressed,.dcard:active,.dcard.is-pressed{background:rgba(255,74,64,.95)!important;border-color:#fff!important;color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.9),0 0 20px rgba(255,59,48,.78)!important;transform:scale(.95)!important}
+.mi:active,.mi.is-pressed{background:rgba(255,59,48,.85)!important;border-color:#fff!important;color:#fff!important;box-shadow:inset 4px 0 0 #fff,0 0 18px rgba(255,59,48,.65)!important;transform:translateX(3px) scale(.965)!important}
 #tc .tb.p,#tc .tb.is-pressed{border-color:#fff!important;box-shadow:0 0 0 3px rgba(255,255,255,.78),0 0 20px rgba(255,255,255,.45)!important;transform:scale(.93)!important}
 #tG.p,#tG.is-pressed{box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 22px rgba(34,224,102,.85)!important}
 #tB.p,#tB.is-pressed{box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 22px rgba(255,59,48,.85)!important}
 #tE.p,#tE.is-pressed{box-shadow:0 0 0 3px rgba(255,255,255,.85),0 0 22px rgba(56,182,255,.85)!important}
 /* Prevent sticky accidental hover highlights on touch devices */
 @media (hover:none){
- .btn:hover:not(.on):not(.go):not(.is-pressed),.qbtn:hover:not(.is-pressed),.mcard:hover:not(.is-pressed),.tcard:hover:not(.on):not(.is-pressed),.dcard:hover:not(.on):not(.is-pressed){transform:none!important;background:rgba(255,255,255,.11)}
+ .btn:hover:not(.on):not(.go):not(.go2):not(.tchip):not(.is-pressed),.qbtn:hover:not(.is-pressed),.mcard:hover:not(.is-pressed),.tcard:hover:not(.on):not(.is-pressed),.dcard:hover:not(.on):not(.is-pressed){transform:none!important}
  .mi:hover:not(.sel):not(.is-pressed){transform:none!important;background:none;border-color:transparent}
 }
