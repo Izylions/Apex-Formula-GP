@@ -14,7 +14,7 @@ window.APEX_PLATFORM = {
   crowdWave: false,
   fxVignette: false
  },
- defaultCam: 0,    // 0 = Wide Chase (switchable via CAM button: Close 3rd-Person, T-Cam, Halo, Eagle Eye)
+ defaultCam: 1,    // 1 = Close 3rd-Person Chase (0 = Wide Chase, 2 = T-Cam, 3 = Halo, 4 = Eagle Eye)
  bind(G) {
   document.body.classList.add('touch', 'mobile');
   const tgl = $('tgl');
