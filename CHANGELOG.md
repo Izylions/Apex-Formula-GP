@@ -4,6 +4,24 @@ All notable changes, bug fixes, visual upgrades, and feature patches for **Apex 
 
 ---
 
+## [v1.3.0] — Race Length Modes, Lap-Free Practice, Tyre & AI Pit Overhaul, Steering Fix, 80 km/h Pit Popup, Richer 3D Scenery, Outro Fireworks & News Modal
+### Added
+- **Race Length Modes & Lap-Free Timed Practice (`src/core/data.js`, `src/core/engine.js`, `index.html`, `mobile.html`)**:
+  - Updated race lengths to **Very Short** (`3 laps`), **Short** (`5 laps`), **Half Full** (`15 laps`), and **Full** (`30 laps`) with practice duration sub-labels (`~5m` Short / `~10m` Full).
+  - Practice is now lap-free with a live session countdown HUD (`PRACTICE · LAP N · MM:SS LEFT`), automatic finish at `0:00`, and a manual **End Practice & View Results** option in the Pause menu.
+- **80 km/h Pit Compound Selection Popup & Pit Limiter HUD (`src/core/engine.js`, `src/core/base.css`, `index.html`, `mobile.html`)**:
+  - Entering pit lane autopilot displays a bold **`PIT LIMITER ACTIVE · 80 KM/H`** badge and opens a **`4.0s` Tyre Compound Selector** (`SOFT`/`MEDIUM`/`HARD`) with `TEAM REC` pill; if countdown expires without confirmation, the team's recommended compound is automatically fitted.
+- **Victory Outro Fireworks (`src/core/world.js`, `src/core/engine.js`)**: Pooled multi-color 3D radial sky firework bursts + subtle firework pop SFX during victory/podium outlap celebration (cleanly cleared on restart/quit with zero static).
+- **Main Menu News / Patch Notes Notification (`index.html`, `mobile.html`, `src/core/engine.js`, `src/core/base.css`)**: Added top-right `✉ News` button with glowing pulsing red unread indicator (`localStorage` persisted per version) opening the `v1.3.0` What's New modal.
+- **Expanded Graphics & Performance Settings (`index.html`, `mobile.html`, `src/core/engine.js`)**: Added Presets (`Max FPS` / `Balanced` / `Ultra`), **Shadows Quality** (`Off` / `Low` / `High`), **Ray-Traced Reflections & Advanced Lighting** toggle (`#s_rt`), **HD Resolution Scale** (`0.6x–1.5x`), **Scenery & Track Detail**, and **Camera FOV**.
+### Fixed & Improved
+- **Precision Steering Fix (`src/core/engine.js`)**: Removed worn-tyre `cliffWobble` and sign-guarded Steering Assist (`c.sAdd`) so Left always steers left and Right always steers right across all tyre wear states (verified `72/72` exact sign tests).
+- **Recalibrated Tyre Endurance & AI Pit Stop Strategy (`src/core/data.js`, `src/core/engine.js`)**: Rebalanced compound wear (**Soft** `~5–10 laps`, **Medium** `~10–15 laps`, **Hard** `~15–20 laps`) and upgraded AI multi-stop pit strategy for worn tyres, front-wing damage (`>35%`), and mid-race strategy calls (`11/11` finished & pitted cleanly on 15-lap stress test).
+- **Larger Minimap, Oversized Mobile Touch Controls & Amber Warnings (`src/core/base.css`, `src/mobile/mobile.css`)**: Enlarged PC minimap (`176×176px`), mobile minimap (`clamp(104px, 28dvh, 124px)`), enlarged mobile touch controls (`72px` base / `~83px` at `1.15x` with `◀ LEFT` / `RIGHT ▶`), and styled collision/penalty/off-track alerts as high-visibility amber hazard banners (`⚠`).
+- **Richer 3D Trackside Scenery (`src/core/world.js`, `src/core/engine.js`)**: Upgraded all circuits with batched cantilevered steel grandstands + VIP glass suites, stepped skyline towers with lit facades/penthouses/spires, sculpted rocky multi-peak mountain ridges, arched Silverstone hangars, and Monaco multi-deck harbour superyachts.
+
+---
+
 ## [v1.2.3] — Multiplayer NAT/TURN Connectivity Fix, Invite Links, Sub-Frame Interpolation & Max FPS Mode
 ### Fixed
 - **Multiplayer Cross-Network / Mobile Connectivity (`src/core/engine.js`, `index.html`, `mobile.html`)**:
