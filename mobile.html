@@ -1,63 +1,135 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#05080e"><title>Apex GP 3D</title>
-<link rel="stylesheet" href="src/core/base.css?v=1.3.0b">
+<link rel="stylesheet" href="src/core/base.css?v=1.4.0">
 <script>
-// Platform router: auto-detects PC vs Mobile (supports ?mode=pc or ?mode=mobile override)
+// Direct Mobile entry point (locked mobile layout)
 (function(){
- var q=new URLSearchParams(location.search).get('mode');
  var mob=true;
- window.__APEX_MODE=mob?'mobile':'pc';
- document.write('<link rel="stylesheet" href="src/'+(mob?'mobile/mobile.css':'pc/pc.css')+'?v=1.3.0b">');
+ window.__APEX_MODE='mobile';
+ document.write('<link rel="stylesheet" href="src/mobile/mobile.css?v=1.4.0">');
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js" onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';document.head.appendChild(s)"></script></head><body>
 <canvas id="gl"></canvas><div id="fx"></div><div id="fade"></div><div id="err" onclick="this.style.display='none'"></div><div id="rot" class="glass" onclick="this.classList.add('hid')"><span>↻ Rotate to landscape for best racing view</span><button type="button" class="btn sm">OK</button></div>
-<div id="qb"><button class="qbtn" id="qN" title="What's New in v1.3.0">✨ What's New?<i class="ndot" id="nDot"></i></button><button class="qbtn" id="qF" title="Fullscreen">⛶</button><button class="qbtn" id="qS">⚙ Settings</button><button class="qbtn" id="qB">‹ Back</button><button class="qbtn" id="qM">✕ Exit</button></div>
-<div class="scr" id="s_main"><div id="nav" class="glass-menu"><div class="logo">APEX<span>GP</span> <small style="font-size:11px;font-style:normal;letter-spacing:1px;opacity:.65;vertical-align:middle">v1.3.0</small></div>
-<button class="mi" id="bSP" data-d="Race solo against the AI: Grand Prix or a custom multi-circuit event.">Single Player</button>
+<div id="qb"><button class="qbtn" id="qN" title="What's New in v1.4.0">✨ What's New?<i class="ndot" id="nDot"></i></button><button class="qbtn" id="qF" title="Fullscreen">⛶</button><button class="qbtn" id="qS">⚙ Settings</button><button class="qbtn" id="qB">‹ Back</button><button class="qbtn" id="qM">✕ Exit</button></div>
+
+<!-- Step 0: Main Menu -->
+<div class="scr" id="s_main"><div id="nav" class="glass-menu"><div class="logo">APEX<span>GP</span> <small style="font-size:11px;font-style:normal;letter-spacing:1px;opacity:.65;vertical-align:middle">v1.4.0</small></div>
+<button class="mi" id="bSP" data-d="Choose circuit, team, driver and session mode (Race, Practice, Qualifying or Full Event).">Single Player</button>
 <button class="mi" id="bMP" data-d="Host a 4-letter room or join a friend's code for a peer-to-peer online race.">Multiplayer</button>
 <div class="sep"></div>
-<button class="mi s2" id="bHT" data-d="Auto-DRS, ERS boost, pit stops and tyre grip explained.">How To Play</button>
-<button class="mi s2" id="bST" data-d="Controls, audio, graphics and camera field of view.">Settings</button>
+<button class="mi s2" id="bHT" data-d="Auto-DRS, ERS boost, pit stops, pit entry gate and F1 tyre grip explained.">How To Play</button>
+<button class="mi s2" id="bST" data-d="120 FPS pacing, V8 audio, controls, graphics and camera field of view.">Settings</button>
 <button class="mi s2" id="bEX" data-d="Close the game.">Exit</button>
 <div id="nd"></div></div></div>
-<div class="scr" id="s_mode"><div class="pg glass pad"><h2>Single Player</h2><p class="sub">Choose how you want to race</p><div class="cards">
-<div class="mcard dis"><b>New Game / Career</b><small>Build a career across seasons</small><span class="badge">Coming Soon (No Save System Yet)</span></div>
-<button class="mcard" id="mGP"><b>Grand Prix</b><small>One circuit, full race against 9 AI cars</small></button>
-<button class="mcard" id="mCU"><b>Custom Race</b><small>Pick one or more circuits, session type and laps</small></button></div></div></div>
-<div class="scr" id="s_custom"><div class="pg glass pad"><h2>Custom Race</h2><h4>Circuits <small id="cnt"></small></h4><div id="cgrid" class="cg"></div>
-<div class="chips"><button class="btn sm" id="cAll">Select all</button><button class="btn sm" id="cNone">Clear</button></div>
-<h4>Session type <small style="opacity:.75">(Practice is lap-free · ~5m Short / ~10m Full)</small></h4><div class="chips sgrid" data-k="sess" id="sessc"></div><h4>Race length / Practice duration</h4><div class="chips lgrid" data-k="laps" id="lapc"></div><button class="btn big go" id="cNext">Continue to team</button></div></div>
-<div class="scr" id="s_team"><div class="pg glass pad" style="width:min(430px,92vw)"><div id="tinf"><small id="tcnt"></small><div id="tnm"></div><p id="tco" class="sub"></p><div id="tsw"></div><div id="tbars"></div></div></div>
-<div class="bot"><button class="btn rb" id="tPrev">‹ Previous</button><button class="btn go2" id="tOk">Select team</button><button class="btn rb" id="tNext">Next ›</button></div></div>
-<div class="scr" id="s_driver"><div class="pg glass pad" style="width:min(540px,94vw)"><div class="dhdr"><div><h2>Choose driver</h2><p class="sub" id="dsub"></p></div><div class="chips" data-k="yr" id="yrd"></div></div><div class="drs2" id="dcards"></div><h4>Starting tyre compound</h4><div class="chips tgrid" data-k="tire" id="tires"></div><button class="btn big go" id="dOk">Confirm driver ›</button></div></div>
-<div class="scr" id="s_ready"><div class="pg glass pad"><h2>Race briefing</h2><div class="car" id="rcar"><button class="btn sm" id="rp">‹</button><div class="card"><canvas id="rmc" width="150" height="90"></canvas><div><b id="rn"></b><br><small id="ri"></small></div></div><button class="btn sm" id="rnx">›</button></div>
-<div id="rlist"></div><div class="sumr"><div id="rteam"></div><div id="rdrv"></div><div id="rses"></div></div><h4>Race length / Practice duration</h4><div class="chips lgrid" data-k="laps" id="lapr"></div><h4>AI Difficulty</h4><div class="chips" data-k="diff" id="diffr"></div><h4>Driver assists</h4><div class="ar"><span>Steering assist</span><div class="chips" data-k="sa" id="sar"></div></div><div class="ar"><span>Braking assist</span><div class="chips" data-k="ba" id="bar2"></div></div><div class="ar"><span>Racing line (L)</span><div class="chips" data-k="ln" id="lnr"></div></div><div class="ar"><span>ERS assist (auto boost)</span><div class="chips" data-k="ea" id="ear"></div></div><div class="rbtns" style="display:flex;gap:8px;margin-top:12px"><button class="btn big go" id="rGo" style="margin-top:0;flex:1">Start</button><button class="btn big" id="rSkip" style="display:none;margin-top:0;flex:1">⏭ Skip Practice → Race</button></div></div></div>
-<div class="scr" id="s_gate"><div class="pg glass pad"><h2>Multiplayer</h2><p class="sub">Host a room (up to 8 players + AI fill) or join with a 4-letter code</p><label class="s" style="margin:6px 0 10px">Your Player Name <input type="text" id="mpName" maxlength="14" placeholder="PLAYER" style="width:170px;margin-left:8px;text-transform:none"></label><div class="cards">
+
+<!-- Step 1: Circuit Selection (Fixed Zero-Scroll Box) -->
+<div class="scr" id="s_circuit"><div class="pg glass pad fxbox cir-box">
+<div class="stepbar"><span class="st on">1 Circuit</span><span class="st">2 Team &amp; Driver</span><span class="st">3 Race Setting</span><span class="st">4 Briefing</span></div>
+<div class="fhead"><div><h2>Select Circuit <small id="cnt"></small></h2><p class="sub" id="cirSub">Tap a circuit to preview live track</p></div>
+<div class="chips" id="cirModeBar"><button class="btn sm on" id="cmSingle">Single GP</button><button class="btn sm" id="cmMulti">Multi-Round</button><button class="btn sm" id="cAll" style="display:none">All</button><button class="btn sm" id="cNone" style="display:none">Clear</button></div></div>
+<div id="cgrid" class="cg fbody"></div>
+<div class="ffoot"><button class="btn big go" id="cNext">Next: Team &amp; Driver ›</button></div>
+</div></div>
+
+<!-- Step 2: Team & Driver Selection (Fixed Left Box + Live 3D Car & Driver Beside Showcase) -->
+<div class="scr" id="s_driver"><div class="pg glass pad fxbox drv-box">
+<div class="stepbar"><span class="st done">1 Circuit</span><span class="st on">2 Team &amp; Driver</span><span class="st">3 Race Setting</span><span class="st">4 Briefing</span></div>
+<div class="dhdr"><div><h2>Team &amp; Driver</h2><p class="sub" id="dsub"></p></div><div class="chips" data-k="yr" id="yrd"></div></div>
+<div class="tstrip">
+<button class="btn sm tnav" id="tPrev" aria-label="Previous team">‹</button>
+<div class="tmeta" id="tinf"><div class="trow"><span id="tsw"></span><b id="tnm"></b><small id="tcnt"></small></div><div class="trow2"><small id="tco"></small><div id="tbars" class="tbars-inline"></div></div></div>
+<button class="btn sm tnav" id="tNext" aria-label="Next team">›</button>
+</div>
+<div class="drs2 fbody" id="dcards"></div>
+<div class="ffoot"><button class="btn big go" id="dOk">Next: Race Setting ›</button></div>
+</div></div>
+
+<!-- Step 3: Race Setting (Fixed 2-Column Zero-Scroll Box: Session, Length, Tyre, Difficulty & Assists) -->
+<div class="scr" id="s_rset"><div class="pg glass pad fxbox rset-box">
+<div class="stepbar"><span class="st done">1 Circuit</span><span class="st done">2 Team &amp; Driver</span><span class="st on">3 Race Setting</span><span class="st">4 Briefing</span></div>
+<div class="fhead"><h2>Race Setting</h2><span class="sub" id="rsetSub">Choose session, race length, tyre &amp; assists</span></div>
+<div class="rset-grid fbody">
+<div class="rset-col">
+<h4>Session Type</h4><div class="chips sgrid4" data-k="sess" id="sessc"></div>
+<h4>Race Length / Practice Timer</h4><div class="chips lgrid2" data-k="laps" id="lapc"></div>
+<h4>Starting Tyre Compound</h4><div class="chips tgrid" data-k="tire" id="tires"></div>
+</div>
+<div class="rset-col">
+<h4>AI Difficulty</h4><div class="chips" data-k="diff" id="diffr"></div>
+<h4>Driver Assists</h4>
+<div class="ar"><span>Steering assist</span><div class="chips" data-k="sa" id="sar"></div></div>
+<div class="ar"><span>Braking assist</span><div class="chips" data-k="ba" id="bar2"></div></div>
+<div class="ar"><span>Racing line (L)</span><div class="chips" data-k="ln" id="lnr"></div></div>
+<div class="ar"><span>ERS auto boost</span><div class="chips" data-k="ea" id="ear"></div></div>
+</div>
+</div>
+<div class="ffoot"><button class="btn big go" id="rsNext">Next: Race Briefing ›</button></div>
+</div></div>
+
+<!-- Step 4: Race Briefing (Fixed Zero-Scroll Summary Card) -->
+<div class="scr" id="s_ready"><div class="pg glass pad fxbox ready-box">
+<div class="stepbar"><span class="st done">1 Circuit</span><span class="st done">2 Team &amp; Driver</span><span class="st done">3 Race Setting</span><span class="st on">4 Briefing</span></div>
+<div class="fhead"><h2>Race Briefing</h2><span class="sub" id="rModeTag">Ready on Grid</span></div>
+<div class="brief-grid fbody">
+<div class="brief-trk">
+<div class="card"><canvas id="rmc" width="150" height="90"></canvas><div><b id="rn"></b><br><small id="ri"></small></div></div>
+<div id="rlist" class="rlist-chips"></div>
+</div>
+<div class="sumr brief-sum">
+<div id="rteam"></div>
+<div id="rdrv"></div>
+<div id="rtyre"></div>
+<div id="rses"></div>
+<div id="rass"></div>
+</div>
+</div>
+<div class="ffoot rbtns" style="display:flex;gap:8px"><button class="btn big go" id="rGo" style="margin-top:0;flex:1">Start Race</button><button class="btn big" id="rSkip" style="display:none;margin-top:0;flex:1">⏭ Skip Practice → Race</button></div>
+</div></div>
+
+<!-- Multiplayer Screens (Fixed Zero-Scroll Boxes) -->
+<div class="scr" id="s_gate"><div class="pg glass pad fxbox mp-box"><h2>Multiplayer</h2><p class="sub">Host a room (up to 8 players + AI fill) or join with a 4-letter code</p><label class="s" style="margin:6px 0 8px">Your Player Name <input type="text" id="mpName" maxlength="14" placeholder="PLAYER" style="width:170px;margin-left:8px;text-transform:none"></label><div class="cards fbody">
 <button class="mcard" id="gHost"><b>Host room</b><small>Up to 8 human players + optional AI grid fill</small></button>
 <div class="mcard"><b>Join room</b><div class="chips" style="margin-top:8px"><input type="text" id="code" maxlength="4" placeholder="CODE"><button class="btn sm" id="gJoin">Join</button></div></div></div><p id="mps" class="sub"></p></div></div>
-<div class="scr" id="s_msetup"><div class="pg glass pad"><h2>Host setup</h2><div class="car"><button class="btn sm" id="mp1">‹</button><div class="card"><canvas id="mmc" width="150" height="90"></canvas><div><b id="mn"></b><br><small id="mi"></small></div></div><button class="btn sm" id="mp2">›</button></div>
-<h4>Mode</h4><div class="chips"><button class="btn sm on">Race (up to 8 players)</button></div><h4>Race length</h4><div class="chips lgrid" data-k="laps" id="lapm"></div><h4>Fill empty grid with AI</h4><div class="chips" data-k="mpai" id="mpaic"></div><h4>AI Difficulty</h4><div class="chips" data-k="diff" id="diffm"></div><button class="btn big go" id="mOk">Open lobby</button></div></div>
-<div class="scr" id="s_lobby"><div class="pg glass pad"><h2>Lobby</h2><div class="chips" style="align-items:center;justify-content:space-between;margin:6px 0"><p id="lcode" class="sub" style="margin:0"></p><button class="btn sm" id="cpLink" style="display:none">📋 Copy Invite Link</button></div><div id="lob"></div><p id="linfo" class="sub"></p><button class="btn big go" id="gomp" style="display:none">Start race</button></div></div>
-<div class="scr" id="s_exit"><div class="pg glass pad"><h2>Thanks for racing!</h2><p>You can close this tab now.</p><button class="btn sm" id="xb">Back to menu</button></div></div>
+<div class="scr" id="s_msetup"><div class="pg glass pad fxbox rset-box"><h2>Host Setup</h2>
+<div class="rset-grid fbody">
+<div class="rset-col">
+<div class="car"><button class="btn sm" id="mp1">‹</button><div class="card"><canvas id="mmc" width="130" height="74"></canvas><div><b id="mn"></b><br><small id="mi"></small></div></div><button class="btn sm" id="mp2">›</button></div>
+<h4>Race Length</h4><div class="chips lgrid2" data-k="laps" id="lapm"></div>
+</div>
+<div class="rset-col">
+<h4>Fill Empty Grid With AI</h4><div class="chips" data-k="mpai" id="mpaic"></div>
+<h4>AI Difficulty</h4><div class="chips" data-k="diff" id="diffm"></div>
+<h4>Starting Tyre</h4><div class="chips tgrid" data-k="tire" id="tiresM"></div>
+</div>
+</div>
+<div class="ffoot"><button class="btn big go" id="mOk">Open Lobby ›</button></div></div></div>
+<div class="scr" id="s_lobby"><div class="pg glass pad fxbox mp-box"><h2>Lobby</h2><div class="chips" style="align-items:center;justify-content:space-between;margin:6px 0"><p id="lcode" class="sub" style="margin:0"></p><button class="btn sm" id="cpLink" style="display:none">📋 Copy Invite Link</button></div><div id="lob" class="fbody" style="overflow-y:auto"></div><p id="linfo" class="sub"></p><div class="ffoot"><button class="btn big go" id="gomp" style="display:none">Start Race</button></div></div></div>
+<div class="scr" id="s_exit"><div class="pg glass pad fxbox mp-box"><h2>Thanks for racing!</h2><p>You can close this tab now.</p><div class="ffoot"><button class="btn sm" id="xb">Back to menu</button></div></div></div>
+
+<!-- Settings Modal -->
 <div id="set" class="modal" style="display:none"><div class="glass mc">
 <div class="tabs"><button class="btn sm on" data-t="c">Controls</button><button class="btn sm" data-t="a">Audio</button><button class="btn sm" data-t="g">Graphics</button><button class="btn sm" data-t="h">How to Play</button></div>
 <div id="t_c"><p><span class="kc">W</span><span class="kc">↑</span> Accelerate &nbsp; <span class="kc">S</span><span class="kc">↓</span> Brake / reverse</p><p><span class="kc">A</span><span class="kc">D</span><span class="kc">←</span><span class="kc">→</span> Steer</p><p><span class="kc">Space</span> Hold for ERS boost &nbsp; <span class="kc">C</span> Camera &nbsp; <span class="kc">P</span>/<span class="kc">Esc</span> Pause &nbsp; <span class="kc">1</span><span class="kc">2</span><span class="kc">3</span> Next pit tyre &nbsp; <span class="kc">M</span> Mute &nbsp; <span class="kc">L</span> Racing line</p>
 <label class="s">Steering sensitivity <b id="v_st">1.0</b><input type="range" id="s_st" min="0.5" max="1.5" step="0.05" value="1"></label><label class="s">Touch button size <b id="v_bsz">1.15x</b><input type="range" id="s_bsz" min="0.8" max="1.4" step="0.05" value="1.15"></label><label class="s"><input type="checkbox" id="s_dbg"> Network / FPS debug HUD (F3)</label><h4>Season, difficulty &amp; assists</h4><div class="ar"><span>F1 Season Roster</span><div class="chips" data-k="yr" id="yrc"></div></div><div class="ar"><span>AI Difficulty</span><div class="chips" data-k="diff" id="diffc"></div></div><div class="ar"><span>Steering assist</span><div class="chips" data-k="sa" id="sac"></div></div><div class="ar"><span>Braking assist</span><div class="chips" data-k="ba" id="bac"></div></div><div class="ar"><span>Racing line <span class="kc">L</span></span><div class="chips" data-k="ln" id="lnc"></div></div><div class="ar"><span>ERS assist (auto boost)</span><div class="chips" data-k="ea" id="eac"></div></div></div>
-<div id="t_a" hidden><div class="ar"><span>Engine sound</span><div class="chips" data-k="eng" id="engc"></div></div><label class="s">Engine volume<input type="range" id="s_ev" min="0" max="1" step="0.05" value="0.7"></label><label class="s">SFX / Music volume<input type="range" id="s_sv" min="0" max="1" step="0.05" value="0.7"></label><label class="s"><input type="checkbox" id="s_mus" checked> Intro / Outro music</label><label class="s"><input type="checkbox" id="s_mu"> Mute all sound</label></div>
-<div id="t_g" hidden><h4>Performance / FPS Preset</h4><div class="chips" id="gfxc"><button class="btn sm" id="gMax" data-g="maxfps">Max FPS</button><button class="btn sm on" id="gBal" data-g="balanced">Balanced</button><button class="btn sm" id="gUlt" data-g="ultra">Ultra</button></div><div class="ar"><span>Shadows quality</span><div class="chips" id="shqc"><button class="btn sm" data-sh="off">Off</button><button class="btn sm" data-sh="low">Low</button><button class="btn sm on" data-sh="high">High</button></div></div><label class="s"><input type="checkbox" id="s_rt" checked> Ray-Traced Reflections &amp; Advanced Lighting</label><label class="s">HD Resolution Scale <b id="v_res">1.00x (HD)</b><input type="range" id="s_res" min="0.6" max="1.5" step="0.05" value="1"></label><div class="ar"><span>Scenery &amp; Track detail</span><div class="chips"><button class="btn sm" id="dl">Low</button><button class="btn sm on" id="dh">High</button></div></div><label class="s">Camera FOV <b id="v_fov">75</b><input type="range" id="s_fov" min="60" max="100" step="1" value="75"></label></div>
-<div id="t_h" hidden><div class="gr"><div class="gc"><b>📡 Auto-DRS</b><p>Inside a DRS zone and within 1.0 s of the car ahead, your rear flap opens by itself for extra top speed. It closes when you brake.</p></div><div class="gc"><b>⚡ ERS boost</b><p>Braking recharges the battery. Hold <span class="kc">Space</span> on a straight for a blue-trail power boost.</p></div><div class="gc"><b>🔧 Pit stops &amp; 80 km/h Strategy</b><p>Enter the pit lane on the right of the main straight. Pit autopilot cruises at 80 km/h and opens a 4 s tyre selector (or auto-fits team recommendation), then changes tyres and repairs your wing in 3 s.</p></div><div class="gc"><b>🛞 Tyre endurance</b><p><span style="color:#ff2a2a">●</span> Soft (~5–10 laps) max grip. <span style="color:#ffd400">●</span> Medium (~10–15 laps) balanced. <span style="color:#f2f2f2">●</span> Hard (~15–20 laps) endurance.</p></div></div></div>
+<div id="t_a" hidden><div class="ar"><span>Engine sound</span><div class="chips"><span class="btn sm on is-selected" style="cursor:default">V8 · Authentic Deep F1 V8</span></div></div><label class="s">Engine volume<input type="range" id="s_ev" min="0" max="1" step="0.05" value="0.7"></label><label class="s">SFX / Music volume<input type="range" id="s_sv" min="0" max="1" step="0.05" value="0.7"></label><label class="s"><input type="checkbox" id="s_mus" checked> Intro / Outro music</label><label class="s"><input type="checkbox" id="s_mu"> Mute all sound</label></div>
+<div id="t_g" hidden><h4>Performance / FPS Preset</h4><div class="chips" id="gfxc"><button class="btn sm" id="gMax" data-g="maxfps">Max FPS</button><button class="btn sm on" id="gBal" data-g="balanced">Balanced</button><button class="btn sm" id="gUlt" data-g="ultra">Ultra</button></div><div class="ar"><span>Frame rate target</span><div class="chips" id="fpsc"><button class="btn sm on" data-fps="120">Auto / 120 FPS</button><button class="btn sm" data-fps="90">90 FPS</button><button class="btn sm" data-fps="60">60 FPS</button></div></div><div class="ar"><span>Shadows quality</span><div class="chips" id="shqc"><button class="btn sm" data-sh="off">Off</button><button class="btn sm" data-sh="low">Low</button><button class="btn sm on" data-sh="high">High</button></div></div><label class="s"><input type="checkbox" id="s_rt" checked> Ray-Traced Reflections &amp; Advanced Lighting</label><label class="s">HD Resolution Scale <b id="v_res">1.00x (HD)</b><input type="range" id="s_res" min="0.6" max="1.5" step="0.05" value="1"></label><div class="ar"><span>Scenery &amp; Track detail</span><div class="chips"><button class="btn sm" id="dl">Low</button><button class="btn sm on" id="dh">High</button></div></div><label class="s">Camera FOV <b id="v_fov">75</b><input type="range" id="s_fov" min="60" max="100" step="1" value="75"></label></div>
+<div id="t_h" hidden><div class="gr"><div class="gc"><b>📡 Auto-DRS</b><p>Inside a DRS zone and within 1.0 s of the car ahead, your rear flap opens by itself for extra top speed. It closes when you brake.</p></div><div class="gc"><b>⚡ ERS boost</b><p>Braking recharges the battery. Hold <span class="kc">Space</span> on a straight for a blue-trail power boost.</p></div><div class="gc"><b>🔧 Pit Lane &amp; Entry Gate</b><p>Pit lane entry opens after Lap 1 via the right-side entry chute (blocked at race start; solid pit wall prevents mid-straight cut-ins). Pit autopilot cruises at 80 km/h with a 4 s tyre selector.</p></div><div class="gc"><b>🛞 Tyre endurance</b><p><span style="color:#ff2a2a">●</span> Soft (~5–10 laps) max grip. <span style="color:#ffd400">●</span> Medium (~10–15 laps) balanced. <span style="color:#f2f2f2">●</span> Hard (~15–20 laps) endurance.</p></div></div></div>
 <button class="btn sm go" id="sx">Done</button></div></div>
-<div id="newsModal" class="modal" style="display:none"><div class="glass mc news-mc"><div class="nhdr"><div><h2>What's New in Apex GP <span class="nver">v1.3.0</span></h2><p class="sub">Latest major gameplay, physics, pit stop &amp; visuals update</p></div><button class="btn sm" id="nxTop">✕</button></div><div id="newsList"></div><button class="btn big go" id="nx">Got it — Let's Race!</button></div></div>
+
+<!-- Tabbed & Collapsible What's New Modal -->
+<div id="newsModal" class="modal" style="display:none"><div class="glass mc news-mc"><div class="nhdr"><div><h2>What's New in Apex GP <span class="nver">v1.4.0</span></h2><p class="sub" id="newsSub">120 FPS Pacing, Deep V8 Engine, Zero-Scroll Menu, F1 Grip &amp; Driver Showcase</p></div><button class="btn sm" id="nxTop">✕</button></div><div class="chips news-tabs" id="newsTabs"></div><div id="newsList"></div><button class="btn big go" id="nx">Got it — Let's Race!</button></div></div>
+
+<!-- In-Race HUD -->
 <div id="hud"><div id="tower" class="glass"></div><div id="lapi" class="glass">LAP 1/3</div><button class="btn sm go" id="skipPrac" style="display:none">⏭ Skip to Race</button><div id="msg"></div><div id="pitLim" class="glass"><span class="pl-badge">80</span><div><b>PIT LIMITER ACTIVE</b><small>80 KM/H SPEED LIMIT</small></div></div><div id="pitPop" class="glass"><div class="pp-hdr"><b>🔧 PIT STOP TYRE CALL</b><span id="ppTm">4.0s</span></div><p class="pp-sub" id="ppSub">Auto-cruising at 80 km/h · Choose next compound</p><div class="pp-bar"><i id="ppBar"></i></div><div class="pp-grid" id="ppGrid"></div><button class="btn sm go" id="ppOk">Confirm Tyre Choice</button></div><div id="svc" class="glass"><b>PIT SERVICE</b><div class="sv"><i id="sv0"></i><i id="sv1"></i><i id="sv2"></i><i id="sv3"></i></div><span id="svt"></span><div class="bar"><i id="svb"></i></div></div><div id="lights" class="glass"><i></i><i></i><i></i><i></i><i></i></div>
 <div id="tele" class="glass"><div id="rev"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="rw"><b id="gear">N</b><span id="spd">0</span><small>KM/H</small></div><div class="ped"><div class="pb b"><i id="brkb"></i></div><div class="pb g"><i id="thrb"></i></div></div><div class="rw2"><div class="bar"><i id="ers"></i></div><span id="drs">DRS</span><span id="tyb">M</span></div><small id="tinfo"></small></div>
 <div id="tc"><div class="tb" id="tL"><span class="ti">◀</span><small>LEFT</small></div><div class="tb" id="tR"><span class="ti">▶</span><small>RIGHT</small></div><div class="tb" id="tB">BRAKE</div><div class="tb" id="tG">GAS</div><div class="tb smt" id="tE">ERS</div><div class="tb smt" id="tCam">CAM</div><div class="tb smt" id="tPit">TYRE</div></div>
 <canvas id="mm" width="240" height="240"></canvas><button class="btn sm" id="lnb">Line: Corners (L)</button><button class="btn sm" id="camb">Cam: Close 3P (C)</button><button class="btn sm" id="tgl">Touch pad</button><div id="hint" class="glass">Click the game once, then: <b>W/↑</b> gas · <b>S/↓</b> brake · <b>A D/← →</b> steer · <b>Space</b> boost · <b>C</b> camera · <b>L</b> line</div><button class="btn sm" id="pbtn">⏸ Menu</button></div>
-<div id="pm" class="modal" style="display:none"><div class="glass pad" style="width:min(360px,90vw)"><h2>Paused</h2><button class="btn big" id="pr">Resume</button><button class="btn big go" id="pSkip" style="display:none">⏭ Skip Practice → Start Race</button><button class="btn big" id="pEnd" style="display:none">End Practice &amp; View Results</button><button class="btn big" id="pc">Camera</button><button class="btn big" id="ps">Settings</button><button class="btn big" id="pq">Quit to main menu</button></div></div>
+<div id="pm" class="modal" style="display:none"><div class="glass pad" style="width:min(360px,90vw)"><h2>Paused</h2><button class="btn big" id="pr">Resume</button><button class="btn big go" id="pSkip" style="display:none">⏭ Skip Practice → Next</button><button class="btn big" id="pEnd" style="display:none">End Practice &amp; View Results</button><button class="btn big" id="pc">Camera</button><button class="btn big" id="ps">Settings</button><button class="btn big" id="pq">Quit to main menu</button></div></div>
 <div id="res" class="modal" style="display:none"><div class="glass mc" id="resin"></div></div><div id="winBadge"><div><b id="wbName"></b><span id="wbSub">CELEBRATION OUTLAP · LIVE</span></div></div><div id="netDbg"></div>
 <!-- Modular load order: core/data -> core/world -> platform adapter (pc or mobile) -> core/engine -->
-<script src="src/core/data.js?v=1.3.0b"></script>
-<script src="src/core/world.js?v=1.3.0b"></script>
-<script>document.write('<script src="src/'+(window.__APEX_MODE==='mobile'?'mobile/mobile.js':'pc/pc.js')+'?v=1.3.0b"><\/script>');</script>
-<script src="src/core/engine.js?v=1.3.0b"></script>
+<script src="src/core/data.js?v=1.4.0"></script>
+<script src="src/core/world.js?v=1.4.0"></script>
+<script src="src/mobile/mobile.js?v=1.4.0"></script>
+<script src="src/core/engine.js?v=1.4.0"></script>
 </body></html>

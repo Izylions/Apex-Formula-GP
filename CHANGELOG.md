@@ -4,6 +4,31 @@ All notable changes, bug fixes, visual upgrades, and feature patches for **Apex 
 
 ---
 
+## [v1.4.0] — 120 FPS Frame Pacing, Deep F1 V8 Synth, Zero-Scroll Step Menu, Full Event Mode, Planted F1 Grip, Active Pit Gate, Multi-Car Director & Animated Driver Showcase
+### Added & Upgraded
+- **Up to 120 FPS Support & Zero-Alloc Frame Pacing (`src/core/engine.js`, `src/pc/pc.js`, `src/mobile/mobile.js`, `index.html`, `mobile.html`)**:
+  - Uncapped native rendering up to **120+ FPS** on capable PC & mobile displays with selectable **Frame Rate Target** (`Auto / 120 FPS`, `90 FPS`, `60 FPS`) in Settings → Graphics for battery/thermal control.
+  - Preserved decoupled `60Hz` fixed-timestep physics with smooth sub-frame render interpolation, pre-bound `requestAnimationFrame` callback, eliminated per-frame closure & `[cos,sin]`/sort array allocations, gated `camera.updateProjectionMatrix()` on actual FOV deltas, and updated racing-line vertex colors only on physics ticks.
+- **Realistic Deep "V8" Engine Synth (`src/core/engine.js`, `index.html`, `mobile.html`)**:
+  - Removed high-pitched V10 and V6 hybrid profiles/whines; replaced with a single realistic deep, throaty F1 **`V8`** engine synth (default & sole profile) combining `0.5x` sub-bass cylinder rumble, `68–246 Hz` firing fundamental, twin-bank detuned harmonics, soft-clip `WaveShaper` exhaust grit, lower-mid body resonance, strict high-cut whine filter, off-throttle exhaust overrun burble, and click-free `silenceRace()` post-race stop.
+- **Fixed-Box Zero-Scroll Step Menu Flow & Separated Session Modes (`index.html`, `mobile.html`, `src/core/base.css`, `src/core/engine.js`)**:
+  - Refactored pre-race flow on both PC & mobile landscape into zero-scroll fixed-height cards: **`Main Menu` → `Circuit` → `Team & Driver` → `Race Setting` → `Race Briefing`**.
+  - Cleanly separated **`Race`** (direct 11-car grid, **no forced Practice**), **`Practice`** (lap-free timed), **`Qualifying`** (solo grid shootout), and new **`Full Event`** (**Practice → Qualifying → Race** sequence).
+- **Tabbed & Collapsible "What's New" Patch History (`src/core/data.js`, `src/core/engine.js`, `src/core/base.css`, `index.html`, `mobile.html`)**:
+  - Added `v1.4.0` above `v1.3.0` with **Current (`v1.4.0`)**, **Previous (`v1.3.0`)**, and **Earlier (`v1.2.x`)** tabs and collapsible `<details>` dropdown rows per item.
+- **Upgraded Broadcast Driver Portraits & Animated 3D Driver Beside-Car Showcase (`assets/models/f1_driver.{blend,glb}`, `src/core/data.js`, `src/core/world.js`, `src/core/engine.js`)**:
+  - Built a Blender 5.3 stylized athletic F1 driver asset (`f1_driver.blend` / `f1_driver.glb`) and matching articulated Three.js `mkDriver()` character standing beside the selected team car with **4 distinct per-driver idle animations** (Champion Arms-Crossed, Visor Check, Hype Fist-Pump, Grid Focus).
+  - Replaced stick-figure driver icons in `drawDrv()` with dramatic studio rim-lit F1 broadcast driver cards.
+### Fixed & Tuned
+- **Planted F1 Grip Physics & Active Pit Lane Entry Gate (`src/core/engine.js`)**:
+  - Tuned lateral ground-effect grip (`maxLat`), grip-bounded yaw authority (`0.88x`), braking yaw-stability damping, and lateral slip decay so hard cornering and hard braking feel planted like an F1 car rather than drifting.
+  - Added solid concrete pit wall collision (`u in [-pe+22 .. px-22]`) preventing mid-straight cut-ins from track to pit boxes, plus an active FIA **race-start pit entry gate** (visual red/white lifting barrier + physics block at Lap 0 start, turning green & opening once Lap 1 pit window opens).
+- **Dynamic Multi-Car Menu Highlight Camera & Clean Race Sightlines (`src/core/engine.js`, `src/core/data.js`)**:
+  - Replaced single-leader lock in `mc(dt)` with a dynamic broadcast director hunting close wheel-to-wheel overtakes and cycling randomly across cars & 4 broadcast angles.
+  - Hid 3D driver name tags (`c.o.lbl`) on cars behind the player (`fwdDot < -18` or `> 650` units) to keep forward sightlines clear, and updated the side race scoreboard (`#tower`) to crisp **3-letter F1 driver codes** (`VER`, `NOR`, `HAM`, `LEC`, etc.).
+
+---
+
 ## [v1.3.0] — Race Length Modes, Lap-Free Practice, Tyre & AI Pit Overhaul, Steering Fix, 80 km/h Pit Popup, Richer 3D Scenery, Outro Fireworks & News Modal
 ### Added
 - **Race Length Modes, Lap-Free Timed Practice & Instant Skip to Race (`src/core/data.js`, `src/core/engine.js`, `index.html`, `mobile.html`)**:
