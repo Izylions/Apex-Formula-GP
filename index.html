@@ -1,12 +1,12 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#05080e"><title>Apex GP 3D</title>
-<link rel="stylesheet" href="src/core/base.css?v=1.3.0">
+<link rel="stylesheet" href="src/core/base.css?v=1.3.0b">
 <script>
 // Platform router: auto-detects PC vs Mobile (supports ?mode=pc or ?mode=mobile override)
 (function(){
  var q=new URLSearchParams(location.search).get('mode');
  var mob=q==='mobile'||(q!=='pc'&&('ontouchstart' in window||navigator.maxTouchPoints>0||Math.min(innerWidth,innerHeight)<=600));
  window.__APEX_MODE=mob?'mobile':'pc';
- document.write('<link rel="stylesheet" href="src/'+(mob?'mobile/mobile.css':'pc/pc.css')+'?v=1.3.0">');
+ document.write('<link rel="stylesheet" href="src/'+(mob?'mobile/mobile.css':'pc/pc.css')+'?v=1.3.0b">');
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -56,8 +56,8 @@
 <div id="pm" class="modal" style="display:none"><div class="glass pad" style="width:min(360px,90vw)"><h2>Paused</h2><button class="btn big" id="pr">Resume</button><button class="btn big go" id="pSkip" style="display:none">⏭ Skip Practice → Start Race</button><button class="btn big" id="pEnd" style="display:none">End Practice &amp; View Results</button><button class="btn big" id="pc">Camera</button><button class="btn big" id="ps">Settings</button><button class="btn big" id="pq">Quit to main menu</button></div></div>
 <div id="res" class="modal" style="display:none"><div class="glass mc" id="resin"></div></div><div id="winBadge"><div><b id="wbName"></b><span id="wbSub">CELEBRATION OUTLAP · LIVE</span></div></div><div id="netDbg"></div>
 <!-- Modular load order: core/data -> core/world -> platform adapter (pc or mobile) -> core/engine -->
-<script src="src/core/data.js?v=1.3.0"></script>
-<script src="src/core/world.js?v=1.3.0"></script>
-<script>document.write('<script src="src/'+(window.__APEX_MODE==='mobile'?'mobile/mobile.js':'pc/pc.js')+'?v=1.3.0"><\/script>');</script>
-<script src="src/core/engine.js?v=1.3.0"></script>
+<script src="src/core/data.js?v=1.3.0b"></script>
+<script src="src/core/world.js?v=1.3.0b"></script>
+<script>document.write('<script src="src/'+(window.__APEX_MODE==='mobile'?'mobile/mobile.js':'pc/pc.js')+'?v=1.3.0b"><\/script>');</script>
+<script src="src/core/engine.js?v=1.3.0b"></script>
 </body></html>
