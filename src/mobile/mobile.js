@@ -9,8 +9,9 @@ window.APEX_PLATFORM = {
   aniso: 4,
   sparks: 120,
   ersP: 90,
-  hudMs: 80,       // ~12.5 Hz HUD refresh
-  mmMs: 100,       // ~10 Hz minimap refresh
+  hudMs: 66,       // ~15 Hz HUD refresh (lightweight at 60–120 FPS)
+  mmMs: 85,        // ~12 Hz minimap refresh
+  defaultFpsCap: 120,
   crowdWave: false,
   fxVignette: false
  },
