@@ -29,11 +29,11 @@ const RACE_LENGTHS=[
 ];
 const APP_VER='1.3.0';
 const PATCH_NOTES=[
- {tag:'NEW',t:'Race Length Modes & Lap-Free Practice',d:'Choose Very Short (3), Short (5), Half Full (15), or Full (30 laps). Practice is now lap-free with a live session timer (~5m Short / ~10m Full) and manual End Practice option.'},
+ {tag:'NEW',t:'Race Length Modes & Instant Skip to Race',d:'Choose Very Short (3), Short (5), Half Full (15), or Full (30 laps). Practice is lap-free with a live session timer (~5m Short / ~10m Full) and a 1-click Skip to Race button anytime.'},
  {tag:'PHYSICS',t:'Recalibrated Tyres & AI Pit Stop Strategy',d:'Soft lasts ~5–10 laps, Medium ~10–15 laps, Hard ~15–20 laps. AI teams now execute multi-stop strategies, pit for worn tyres or wing damage, and fit compounds for remaining laps.'},
  {tag:'FIX',t:'Precision Steering & Larger Controls / Minimap',d:'Removed worn-tyre steering wobble and assist sign-flip—Left always steers left and Right always steers right. Enlarged minimap on PC & Mobile and oversized mobile touch pads.'},
  {tag:'PIT',t:'80 km/h Pit Compound Popup & Warning Banners',d:'Entering pit autopilot opens a 4-second tyre compound selector with team recommendation auto-fallback, paired with a bold 80 km/h Pit Limiter badge and amber hazard banners.'},
- {tag:'VISUALS',t:'Richer 3D Scenery, Fireworks & Scalable Graphics',d:'Upgraded sculpted mountains, cantilevered grandstands, stepped skyline buildings, Victory Outro fireworks, plus Shadows, Ray-Traced Reflections FX & HD Resolution Scale settings.'}
+ {tag:'VISUALS',t:'Authentic Real-World 3D Circuits, Fireworks & Graphics',d:'Rebuilt all 9 F1 circuits with authentic landmarks: pitch-dark floodlit Marina Bay skyscraper canyon + Sands/Flyer, Monaco Riviera + harbour yachts, Monza banked oval, Silverstone Wing, Bahrain Sakhir Tower, Victory Outro fireworks & scalable Graphics presets.'}
 ];
 ['Italy','United Kingdom','United Kingdom','Germany / UK','United Kingdom','France','United Kingdom','Italy','USA','Germany','USA'].forEach((c,i)=>TEAMS[i].co=c);
 const ROSTERS={
@@ -83,9 +83,9 @@ const TRACK_THEMES={
  monaco:{sky:['#1256c4','#3e8ef0','#9fd3fa','#f0eadb','#1d5a8a',24,.48,250],grade:'contrast(1.09) saturate(0.98) brightness(1.02)',kerbBorder:0xd4141c,tecPro:[0xd4141c,0xf4f4f4],rcAccent:0xff2d3d,paddock:false},
  imola:{sky:['#2266c8','#589de6','#bcdcf5','#f5e6cc','#385e34',34,.58,290],grade:'contrast(1.09) saturate(0.96) brightness(1.02)',turf:0x3d5735,kerbBorder:0x15803d,tecPro:[0x15803d,0xf4f4f4],rcAccent:0xff2d3d},
  monza:{sky:['#2468c6','#5b9ee4','#bdddf4','#f3e5cc','#345a32',32,.56,300],grade:'contrast(1.09) saturate(0.96) brightness(1.02)',turf:0x385233,kerbBorder:0x15803d,tecPro:[0xd4141c,0xf4f4f4],rcAccent:0xff2d3d},
- marina:{sky:['#02040d','#091229','#192c54','#2c2246','#0b101d',14,.14,0],grade:'contrast(1.14) saturate(1.14)',kerbBorder:0x00d2be,tecPro:[0x2a5bd7,0xf4f4f4],rcAccent:0x38e8ff,paddock:false},
- bahrain:{sky:['#030510','#0f1328','#2a2342','#4a3438','#1c1714',10,.12,0],grade:'contrast(1.12) saturate(1.10)',kerbBorder:0xd4141c,tecPro:[0xd4141c,0xf4f4f4],rcAccent:0xffa63a},
- jeddah:{sky:['#02040c','#08132b','#162b52','#243554','#081826',12,.12,0],grade:'contrast(1.14) saturate(1.12)',kerbBorder:0x00d2be,tecPro:[0x1b7a5a,0xf4f4f4],rcAccent:0x6fd8ff,paddock:false}
+ marina:{sky:['#010207','#030714','#070f22','#0c1328','#04070e',8,.07,0],fog:0x050a16,grade:'contrast(1.16) saturate(1.18)',kerbBorder:0x00d2be,tecPro:[0x2a5bd7,0xf4f4f4],rcAccent:0x38e8ff,paddock:false},
+ bahrain:{sky:['#020309','#080a16','#161224','#241a24','#100c09',6,.08,0],fog:0x100e18,grade:'contrast(1.14) saturate(1.12)',kerbBorder:0xd4141c,tecPro:[0xd4141c,0xf4f4f4],rcAccent:0xffa63a},
+ jeddah:{sky:['#010208','#030918','#08152b','#0d1d34','#040d16',8,.08,0],fog:0x061020,grade:'contrast(1.16) saturate(1.15)',kerbBorder:0x00d2be,tecPro:[0x1b7a5a,0xf4f4f4],rcAccent:0x6fd8ff,paddock:false}
 };
 function trackCfg(id){return Object.assign({},TRACK_BASELINE,TRACK_THEMES[id]||{})}
 /* Sepang trackside sponsors (fictional brands): [name, background, text colour] */
