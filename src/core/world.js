@@ -332,6 +332,82 @@ function mkCar(tm,tire,drvNum){
  for(const s of[-1,1]){rod([12.2,2.55,s*1.9],[12.2,3.55,s*5.9],.18);rod([10.2,1.82,s*1.9],[12.2,3.15,s*5.9],.18);rod([-11.8,2.55,s*1.9],[-11.8,3.95,s*6.0],.2);rod([-9.8,1.95,s*1.9],[-11.8,3.55,s*6.0],.2)}
  g.rotation.order='YZX';return o}
 
+// Articulated stylized 3D F1 Driver (Blender-proportioned 1.78m athletic rig standing beside team car with per-driver pose animation)
+function mkDriver(tm,drv,slotIdx){
+ const g=new THREE.Group(),c=tm.c,d=tm.d,c3=tm.c3!=null?tm.c3:d,pose=(drv&&drv[4]!=null)?drv[4]:(slotIdx||0)%4;
+ const suit=sm(c,.56,.08,.12),acc=sm(d,.42,.14,.35),acc3=sm(c3,.42,.18,.3),dark=sm(0x13161e,.55,.22),boot=sm(0x101218,.38,.18,.2);
+ const helm=sm(slotIdx?d:0xf0f3f8,.14,.25,.92),vis=sm(0x060a14,.05,.94,1.0),gold=sm(0xf2c938,.26,.7,.6);
+ const add=(geo,m,x,y,z,p,rx,ry,rz)=>{const k=new THREE.Mesh(geo,m);k.position.set(x,y,z);if(rx)k.rotation.x=rx;if(ry)k.rotation.y=ry;if(rz)k.rotation.z=rz;k.castShadow=true;(p||g).add(k);return k};
+ const ao=new THREE.Mesh(new THREE.CircleGeometry(3.8,20),new THREE.MeshBasicMaterial({map:wheelAoTex(),transparent:true,depthWrite:false}));ao.rotation.x=-Math.PI/2;ao.position.y=.12;g.add(ao);
+ // Scale S=8.1 maps 1.78m height to ~14.4 world units (authentic 1:1 scale beside 44-unit F1 car)
+ const S=8.1,body=new THREE.Group();body.scale.setScalar(S);g.add(body);
+ const stWide=pose===0?.145:pose===2?.155:.13;
+ for(const s of[-1,1]){
+  add(new THREE.BoxGeometry(.11,.13,.27),boot,s*stWide,.065,.04,body,0,s*.1,0);
+  add(new THREE.CylinderGeometry(.062,.054,.42,10),suit,s*stWide,.31,0,body,.02,0,s*-.03);
+  add(new THREE.SphereGeometry(.068,10,8),dark,s*stWide,.51,.025,body);
+  add(new THREE.CylinderGeometry(.082,.068,.44,10),suit,s*(stWide-.01),.70,0,body,-.02,0,s*.03);
+ }
+ const pelv=add(new THREE.SphereGeometry(.175,14,10),suit,0,.91,0,body);pelv.scale.set(1.12,.74,.78);
+ const belt=add(new THREE.CylinderGeometry(.175,.17,.055,14),dark,0,.99,0,body);belt.scale.set(1.1,1,.78);
+ add(new THREE.BoxGeometry(.08,.05,.04),gold,0,.99,.145,body);
+ const upper=new THREE.Group();upper.position.set(0,1.01,0);body.add(upper);
+ const tor=add(new THREE.CylinderGeometry(.20,.165,.46,14),suit,0,.23,0,upper);tor.scale.set(1.22,1,.76);
+ const yoke=add(new THREE.SphereGeometry(.22,14,10),acc,0,.38,.01,upper);yoke.scale.set(1.26,.58,.74);
+ add(new THREE.BoxGeometry(.29,.09,.035),acc,0,.22,.145,upper);
+ add(new THREE.BoxGeometry(.22,.038,.038),acc3,0,.13,.142,upper);
+ add(new THREE.BoxGeometry(.025,.42,.03),dark,0,.22,.152,upper);
+ const col=add(new THREE.TorusGeometry(.105,.034,8,16),dark,0,.48,0,upper,Math.PI/2+.08,0,0);col.scale.set(1.06,1.12,.95);
+ const head=new THREE.Group();head.position.set(0,.52,0);upper.add(head);
+ add(new THREE.CylinderGeometry(.062,.068,.11,10),dark,0,.03,0,head);
+ const hs=add(new THREE.SphereGeometry(.146,18,14),helm,0,.15,.01,head,.04,0,0);hs.scale.set(.96,1.02,1.12);
+ const hc=add(new THREE.CylinderGeometry(.118,.11,.10,12),helm,0,.085,.045,head,.18,0,0);hc.scale.set(.94,1,1.04);
+ const hv=add(new THREE.CylinderGeometry(.143,.141,.072,18,1,false,-Math.PI*.48,Math.PI*.96),vis,0,.155,.024,head,.04,0,0);hv.scale.set(.99,1,1.08);
+ add(new THREE.BoxGeometry(.055,.03,.23),slotIdx?suit:acc,0,.285,.01,head);
+ add(new THREE.BoxGeometry(.16,.032,.05),acc,0,.11,-.145,head,.32,0,0);
+ const mkArm=s=>{
+  const sh=new THREE.Group();sh.position.set(s*.26,.40,0);upper.add(sh);
+  add(new THREE.SphereGeometry(.08,10,8),suit,0,0,0,sh);
+  add(new THREE.CylinderGeometry(.056,.048,.29,10),suit,0,-.15,0,sh);
+  const el=new THREE.Group();el.position.set(0,-.29,0);sh.add(el);
+  add(new THREE.SphereGeometry(.048,8,6),acc,0,0,0,el);
+  add(new THREE.CylinderGeometry(.046,.040,.25,10),suit,0,-.13,0,el);
+  const gl=add(new THREE.SphereGeometry(.052,10,8),dark,0,-.27,0,el);gl.scale.set(1.05,.9,.85);
+  return {sh,el};
+ };
+ const L=mkArm(1),R=mkArm(-1);
+ const step=t=>{
+  const br=Math.sin(t*2.1),sw=Math.sin(t*1.05);
+  upper.position.y=1.01+br*.007;
+  if(pose===0){
+   upper.rotation.set(br*.015,sw*.07,0);
+   head.rotation.set(Math.sin(t*1.3)*.04,Math.sin(t*.85)*.22,0);
+   L.sh.rotation.set(-.58,.15,-.34);L.el.rotation.set(-1.38,-.35,-.92);
+   R.sh.rotation.set(-.64,-.15,.34);R.el.rotation.set(-1.46,.35,.92);
+  }else if(pose===1){
+   const check=.5+.5*Math.sin(t*1.6);
+   upper.rotation.set(-.03+br*.015,-.10+sw*.06,.02);
+   head.rotation.set(-.04+check*.06,.16-check*.14,.03);
+   L.sh.rotation.set(.08,.1,-.46);L.el.rotation.set(-.35,0,.95);
+   R.sh.rotation.set(-1.25-check*.22,-.25,.28);R.el.rotation.set(-1.68-check*.18,.2,.42);
+  }else if(pose===2){
+   const pump=Math.max(0,Math.sin(t*2.4));
+   upper.rotation.set(.03+br*.02,.14+sw*.08,-.05);
+   head.rotation.set(-.05+pump*.05,-.12+sw*.16,-.04);
+   L.sh.rotation.set(-.18,.08,-.22);L.el.rotation.set(-.45,0,.22);
+   R.sh.rotation.set(-1.05-pump*.38,-.15,.34);R.el.rotation.set(-1.15-pump*.32,0,.18);
+  }else{
+   const tug=Math.sin(t*2.8)*.08;
+   upper.rotation.set(.05+br*.015,sw*.05,0);
+   head.rotation.set(.10-Math.sin(t*1.1)*.09,sw*.14,0);
+   L.sh.rotation.set(-.52+tug,.28,-.22);L.el.rotation.set(-1.12,-.25,-.58);
+   R.sh.rotation.set(-.52-tug,-.28,.22);R.el.rotation.set(-1.12,.25,.58);
+  }
+ };
+ step(0);
+ return {g,step,pose};
+}
+
 const LBLTEX={};
 function mkLabel(txt,colHex){
  const key=txt+'_'+colHex;

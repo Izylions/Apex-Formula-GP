@@ -27,42 +27,58 @@ const RACE_LENGTHS=[
  {v:15,n:'Half Full',sub:'15 laps · ~10m prac',pracSec:600},
  {v:30,n:'Full',sub:'30 laps · ~10m prac',pracSec:600}
 ];
-const APP_VER='1.3.0';
-const PATCH_NOTES=[
- {tag:'NEW',t:'Race Length Modes & Instant Skip to Race',d:'Choose Very Short (3), Short (5), Half Full (15), or Full (30 laps). Practice is lap-free with a live session timer (~5m Short / ~10m Full) and a 1-click Skip to Race button anytime.'},
- {tag:'PHYSICS',t:'Recalibrated Tyres & AI Pit Stop Strategy',d:'Soft lasts ~5–10 laps, Medium ~10–15 laps, Hard ~15–20 laps. AI teams now execute multi-stop strategies, pit for worn tyres or wing damage, and fit compounds for remaining laps.'},
- {tag:'FIX',t:'All-9-Circuit Geometry, Corner, Barrier & Sand Cleanup',d:'Audited and fixed every circuit (Monaco Fairmont/Mirabeau/Tunnel, Silverstone Loop, Spa Bus Stop & La Source, Bahrain T1/T10, Monza Lesmo, Marina Bay T10, Imola chicane, Sepang & Jeddah): smoothed sharp corner kinks, added per-side dynamic safe barriers & catch-fences, and cleared all encroaching sand/gravel traps, embankments, and trackside props off the racing surface.'},
- {tag:'FIX',t:'Precision Steering & Larger Controls / Minimap',d:'Removed worn-tyre steering wobble and assist sign-flip—Left always steers left and Right always steers right. Enlarged minimap on PC & Mobile and oversized mobile touch pads.'},
- {tag:'PIT',t:'80 km/h Pit Compound Popup & Warning Banners',d:'Entering pit autopilot opens a 4-second tyre compound selector with team recommendation auto-fallback, paired with a bold 80 km/h Pit Limiter badge and amber hazard banners.'},
- {tag:'VISUALS',t:'Authentic Real-World 3D Circuits, Fireworks & Graphics',d:'Rebuilt all 9 F1 circuits with authentic landmarks: pitch-dark floodlit Marina Bay skyscraper canyon + Sands/Flyer, Monaco Riviera + harbour yachts, Monza banked oval, Silverstone Wing, Bahrain Sakhir Tower, Victory Outro fireworks & scalable Graphics presets.'}
+const APP_VER='1.4.0';
+const PATCH_HISTORY=[
+ {ver:'1.4.0',label:'Current · v1.4.0',sub:'120 FPS Pacing, Deep V8 Engine, Zero-Scroll Step Menu, F1 Grip & Driver Showcase',items:[
+  {tag:'PERF',t:'Up to 120 FPS Support & Zero-Alloc Frame Pacing',d:'Uncapped native rendering up to 120+ FPS on capable PC & mobile displays with selectable Frame Rate Target (Auto/120, 90, 60 FPS), decoupled 60Hz fixed-step physics + smooth sub-frame interpolation, and zero per-frame GC allocations in loop/camera/physics.'},
+  {tag:'AUDIO',t:'New Realistic Deep "V8" Engine Synth (Replaced V10/V6)',d:'Removed high-pitched V10 and V6 mosquito whines; built a single authentic deep, throaty F1 V8 engine synth (default "V8") featuring sub-bass cylinder rumble, twin-bank firing harmonics, soft-clip exhaust grit, off-throttle burble, and zero post-race static.'},
+  {tag:'UI',t:'Fixed-Box Zero-Scroll Step Menu Flow & Full Event Mode',d:'Refactored pre-race flow on PC & mobile landscape into zero-scroll fixed boxes: Main Menu → Circuit → Team & Driver → Race Setting → Race Briefing. Separated Practice, Qualifying, and Race (no forced Practice in Race), plus added Full Event (Practice + Qualifying + Race).'},
+  {tag:'VISUALS',t:'Broadcast Driver Portraits & Animated 3D Beside-Car Showcase',d:'Replaced stick-figure driver icons with rim-lit F1 broadcast driver cards and added a Blender-proportioned articulated 3D driver posing beside the selected team car with unique animations per driver.'},
+  {tag:'PHYSICS',t:'Planted F1 Grip Physics & Active Pit Lane Entry Gate',d:'Reduced excessive cornering/braking drift via stronger ground-effect lateral grip, grip-bounded yaw authority, and braking yaw-stability. Added solid concrete pit wall collision (no mid-straight cut-ins) plus an active FIA race-start pit entry gate.'},
+  {tag:'CAMERA',t:'Dynamic Multi-Car Menu Highlight Director & Clean Sightlines',d:'Menu highlight camera now hunts live wheel-to-wheel overtake battles and cycles dynamically across random cars instead of locking onto one driver. In-race 3D driver name tags hide on cars behind you, and side scoreboard displays crisp 3-letter codes (VER, NOR, HAM, LEC).'},
+  {tag:'UI',t:'Tabbed & Collapsible What\'s New Patch History',d:'Upgraded What\'s New modal with Current (v1.4.0) vs Previous (v1.3.0 & earlier) tabs and collapsible dropdown items per fix/feature.'}
+ ]},
+ {ver:'1.3.0',label:'Previous · v1.3.0',sub:'All-9-Circuit Realism & Cleanup, Race Lengths, Timed Practice, AI Pits & Fireworks',items:[
+  {tag:'FIX',t:'All-9-Circuit Geometry, Corner, Barrier & Sand Cleanup',d:'Audited and fixed every circuit (Monaco Fairmont/Mirabeau/Tunnel, Silverstone Loop, Spa Bus Stop & La Source, Bahrain T1/T10, Monza Lesmo, Marina Bay T10, Imola chicane, Sepang & Jeddah): smoothed sharp corner kinks, added per-side dynamic safe barriers & catch-fences, and cleared all encroaching sand/gravel traps, embankments, and trackside props off the racing surface.'},
+  {tag:'NEW',t:'Race Length Modes & Instant Skip to Race',d:'Choose Very Short (3), Short (5), Half Full (15), or Full (30 laps). Practice is lap-free with a live session timer (~5m Short / ~10m Full) and a 1-click Skip to Race button anytime.'},
+  {tag:'PHYSICS',t:'Recalibrated Tyres & AI Pit Stop Strategy',d:'Soft lasts ~5–10 laps, Medium ~10–15 laps, Hard ~15–20 laps. AI teams execute multi-stop strategies, pit for worn tyres or wing damage, and fit compounds for remaining laps.'},
+  {tag:'FIX',t:'Precision Steering & Larger Controls / Minimap',d:'Removed worn-tyre steering wobble and assist sign-flip—Left always steers left and Right always steers right. Enlarged minimap on PC & Mobile and oversized mobile touch pads.'},
+  {tag:'PIT',t:'80 km/h Pit Compound Popup & Warning Banners',d:'Entering pit autopilot opens a 4-second tyre compound selector with team recommendation auto-fallback, paired with a bold 80 km/h Pit Limiter badge and amber hazard banners.'},
+  {tag:'VISUALS',t:'Authentic Real-World 3D Circuits, Fireworks & Graphics',d:'Rebuilt all 9 F1 circuits with authentic landmarks: pitch-dark floodlit Marina Bay skyscraper canyon + Sands/Flyer, Monaco Riviera + harbour yachts, Monza banked oval, Silverstone Wing, Bahrain Sakhir Tower, Victory Outro fireworks & scalable Graphics presets.'}
+ ]},
+ {ver:'1.2.x',label:'Earlier · v1.2.x',sub:'Cross-Network Multiplayer, Rock Soundtrack & Standardized Defaults',items:[
+  {tag:'FIX',t:'Multiplayer STUN/TURN Relay & Invite Links (v1.2.3)',d:'Added STUN + public TURN relay servers, PeerJS JSON DataChannel reliability, and 1-click ?join=CODE invite links for PC ↔ Mobile cross-play.'},
+  {tag:'AUDIO',t:'Custom Rock Soundtrack & Pro Tyre Selection Cards (v1.2.2)',d:'Integrated uploaded rock intro/selection/outro soundtrack with zero post-race static and color-coded tyre compound cards.'}
+ ]}
 ];
+const PATCH_NOTES=PATCH_HISTORY[0].items;
 ['Italy','United Kingdom','United Kingdom','Germany / UK','United Kingdom','France','United Kingdom','Italy','USA','Germany','USA'].forEach((c,i)=>TEAMS[i].co=c);
 const ROSTERS={
  2026:[
-  [['Charles Leclerc',16,'MON'],['Lewis Hamilton',44,'GBR']],
-  [['Max Verstappen',3,'NED'],['Isack Hadjar',6,'FRA']],
-  [['Lando Norris',1,'GBR'],['Oscar Piastri',81,'AUS']],
-  [['George Russell',63,'GBR'],['Kimi Antonelli',12,'ITA']],
-  [['Fernando Alonso',14,'ESP'],['Lance Stroll',18,'CAN']],
-  [['Pierre Gasly',10,'FRA'],['Franco Colapinto',43,'ARG']],
-  [['Alexander Albon',23,'THA'],['Carlos Sainz Jr.',55,'ESP']],
-  [['Liam Lawson',30,'NZL'],['Arvid Lindblad',41,'GBR']],
-  [['Esteban Ocon',31,'FRA'],['Oliver Bearman',87,'GBR']],
-  [['Nico Hülkenberg',27,'GER'],['Gabriel Bortoleto',5,'BRA']],
-  [['Sergio Pérez',11,'MEX'],['Valtteri Bottas',77,'FIN']]
+  [['Charles Leclerc',16,'MON','LEC',0],['Lewis Hamilton',44,'GBR','HAM',1]],
+  [['Max Verstappen',3,'NED','VER',2],['Isack Hadjar',6,'FRA','HAD',3]],
+  [['Lando Norris',1,'GBR','NOR',1],['Oscar Piastri',81,'AUS','PIA',0]],
+  [['George Russell',63,'GBR','RUS',0],['Kimi Antonelli',12,'ITA','ANT',2]],
+  [['Fernando Alonso',14,'ESP','ALO',1],['Lance Stroll',18,'CAN','STR',3]],
+  [['Pierre Gasly',10,'FRA','GAS',0],['Franco Colapinto',43,'ARG','COL',2]],
+  [['Alexander Albon',23,'THA','ALB',1],['Carlos Sainz Jr.',55,'ESP','SAI',0]],
+  [['Liam Lawson',30,'NZL','LAW',2],['Arvid Lindblad',41,'GBR','LIN',3]],
+  [['Esteban Ocon',31,'FRA','OCO',0],['Oliver Bearman',87,'GBR','BEA',1]],
+  [['Nico Hülkenberg',27,'GER','HUL',2],['Gabriel Bortoleto',5,'BRA','BOR',3]],
+  [['Sergio Pérez',11,'MEX','PER',0],['Valtteri Bottas',77,'FIN','BOT',1]]
  ],
  2027:[
-  [['Charles Leclerc',16,'MON'],['Lewis Hamilton',44,'GBR']],
-  [['Max Verstappen',3,'NED'],['Isack Hadjar',6,'FRA']],
-  [['Lando Norris',1,'GBR'],['Oscar Piastri',81,'AUS']],
-  [['George Russell',63,'GBR'],['Kimi Antonelli',12,'ITA']],
-  [['Fernando Alonso',14,'ESP'],['Lance Stroll',18,'CAN']],
-  [['Pierre Gasly',10,'FRA'],['Franco Colapinto',43,'ARG']],
-  [['Alexander Albon',23,'THA'],['Carlos Sainz Jr.',55,'ESP']],
-  [['Liam Lawson',30,'NZL'],['Arvid Lindblad',41,'GBR']],
-  [['Rafael Câmara',51,'BRA'],['Oliver Bearman',87,'GBR']],
-  [['Nico Hülkenberg',27,'GER'],['Gabriel Bortoleto',5,'BRA']],
-  [['Sergio Pérez',11,'MEX'],['Valtteri Bottas',77,'FIN']]
+  [['Charles Leclerc',16,'MON','LEC',0],['Lewis Hamilton',44,'GBR','HAM',1]],
+  [['Max Verstappen',3,'NED','VER',2],['Isack Hadjar',6,'FRA','HAD',3]],
+  [['Lando Norris',1,'GBR','NOR',1],['Oscar Piastri',81,'AUS','PIA',0]],
+  [['George Russell',63,'GBR','RUS',0],['Kimi Antonelli',12,'ITA','ANT',2]],
+  [['Fernando Alonso',14,'ESP','ALO',1],['Lance Stroll',18,'CAN','STR',3]],
+  [['Pierre Gasly',10,'FRA','GAS',0],['Franco Colapinto',43,'ARG','COL',2]],
+  [['Alexander Albon',23,'THA','ALB',1],['Carlos Sainz Jr.',55,'ESP','SAI',0]],
+  [['Liam Lawson',30,'NZL','LAW',2],['Arvid Lindblad',41,'GBR','LIN',3]],
+  [['Rafael Câmara',51,'BRA','CAM',0],['Oliver Bearman',87,'GBR','BEA',1]],
+  [['Nico Hülkenberg',27,'GER','HUL',2],['Gabriel Bortoleto',5,'BRA','BOR',3]],
+  [['Sergio Pérez',11,'MEX','PER',0],['Valtteri Bottas',77,'FIN','BOT',1]]
  ]
 };
 let DR=ROSTERS[2027];
@@ -129,12 +145,67 @@ function applyFeat(d){const F=FEAT[d.id];if(!F)return;if(F.el)d.el=F.el.map(q=>[
 TRACKS.forEach(applyFeat);
 
 function drawTrk(c,d){const x=c.getContext('2d'),w=c.width,h=c.height;x.clearRect(0,0,w,h);const xs=d.pts.map(p=>p[0]),ys=d.pts.map(p=>p[1]),x0=Math.min(...xs),y0=Math.min(...ys),k=Math.min((w-20)/(Math.max(...xs)-x0),(h-20)/(Math.max(...ys)-y0));x.strokeStyle='#fff';x.lineWidth=1.2+(d.hw||54)/22;x.lineJoin='round';x.beginPath();d.pts.forEach((p,i)=>{const X=10+(p[0]-x0)*k,Y=10+(p[1]-y0)*k;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.closePath();x.stroke();x.fillStyle='#ff3b30';x.fillRect(10+(d.pts[0][0]-x0)*k-3,10+(d.pts[0][1]-y0)*k-3,6,6)}
-function drawDrv(c,tm,d,i){const x=c.getContext('2d'),w=c.width,h=c.height,cl=hex(tm.c),ac=hex(tm.d),g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#1b2030');g.addColorStop(1,cl);x.fillStyle=g;x.fillRect(0,0,w,h);
- x.fillStyle=ac;x.globalAlpha=.25;x.beginPath();x.moveTo(0,h*.55);x.lineTo(w,h*.25);x.lineTo(w,h*.45);x.lineTo(0,h*.8);x.fill();x.globalAlpha=1;
- x.fillStyle=cl;x.beginPath();x.ellipse(w/2,h+10,w*.48,h*.38,0,Math.PI,0);x.fill();x.fillStyle='#fff';x.fillRect(w/2-3,h*.62,6,h*.38);x.fillStyle=ac;x.fillRect(w*.18,h*.8,w*.64,5);
- x.fillStyle='#caa27a';x.fillRect(w/2-12,h*.52,24,h*.14);const hx=w/2+(i?6:-6),hy=h*.36;x.fillStyle=i?ac:'#f2f2f2';x.beginPath();x.arc(hx,hy,h*.2,0,TAU);x.fill();
- x.fillStyle=cl;x.beginPath();x.moveTo(hx,hy);x.arc(hx,hy,h*.2,Math.PI*1.05,Math.PI*1.75);x.fill();x.fillStyle='#10131b';x.beginPath();x.ellipse(hx+(i?6:-6),hy+4,h*.14,h*.065,0,0,TAU);x.fill();x.fillStyle='rgba(255,255,255,.35)';x.fillRect(hx-8,hy+1,16,3);
- x.fillStyle='#fff';x.font='800 34px Arial';x.textAlign='right';x.fillText(d[1],w-10,34)}
+function drawDrv(c,tm,d,i){
+ const x=c.getContext('2d'),w=c.width,h=c.height,cl=hex(tm.c),ac=hex(tm.d),c3=hex(tm.c3!=null?tm.c3:tm.d),code=d[3]||d[0].slice(0,3).toUpperCase();
+ x.clearRect(0,0,w,h);
+ // Dark carbon studio backdrop with dramatic dual rim-light glow (F1 broadcast editorial aesthetic)
+ const bg=x.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#090d16');bg.addColorStop(.55,'#111827');bg.addColorStop(1,'#070a11');x.fillStyle=bg;x.fillRect(0,0,w,h);
+ const rimL=x.createRadialGradient(w*.12,h*.36,4,w*.12,h*.36,w*.88);rimL.addColorStop(0,ac);rimL.addColorStop(.45,'rgba(0,0,0,0)');x.globalAlpha=.36;x.fillStyle=rimL;x.fillRect(0,0,w,h);
+ const rimR=x.createRadialGradient(w*.92,h*.28,4,w*.92,h*.28,w*.85);rimR.addColorStop(0,cl);rimR.addColorStop(.55,'rgba(0,0,0,0)');x.globalAlpha=.52;x.fillStyle=rimR;x.fillRect(0,0,w,h);x.globalAlpha=1;
+ // Subtle broadcast telemetry grid & diagonal speed slashes
+ x.strokeStyle='rgba(255,255,255,.045)';x.lineWidth=1;for(let gy=18;gy<h;gy+=18){x.beginPath();x.moveTo(0,gy);x.lineTo(w,gy);x.stroke()}
+ x.fillStyle=ac;x.globalAlpha=.14;x.beginPath();x.moveTo(0,h*.64);x.lineTo(w,h*.28);x.lineTo(w,h*.38);x.lineTo(0,h*.74);x.fill();x.globalAlpha=1;
+ // Bold broadcast driver number watermark
+ x.save();x.fillStyle='rgba(255,255,255,.075)';x.font='italic 900 '+Math.round(h*.44)+'px "Segoe UI",Arial,sans-serif';x.textAlign='right';x.fillText(String(d[1]),w-4,h*.44);x.restore();
+ // Sculpted athletic F1 Nomex race suit torso & contoured shoulders (3/4 studio framing)
+ const cx=w*.5+(i?4:-4);
+ const suitG=x.createLinearGradient(cx-w*.46,h*.52,cx+w*.46,h);suitG.addColorStop(0,cl);suitG.addColorStop(.52,cl);suitG.addColorStop(1,'#0b0e15');
+ x.fillStyle=suitG;x.beginPath();
+ x.moveTo(cx-w*.48,h+6);x.quadraticCurveTo(cx-w*.46,h*.64,cx-w*.22,h*.57);x.lineTo(cx+w*.22,h*.57);x.quadraticCurveTo(cx+w*.46,h*.64,cx+w*.48,h+6);x.closePath();x.fill();
+ // Studio rim edge highlights along shoulders
+ x.strokeStyle=ac;x.lineWidth=2.4;x.globalAlpha=.75;x.beginPath();x.moveTo(cx-w*.44,h*.88);x.quadraticCurveTo(cx-w*.42,h*.64,cx-w*.18,h*.575);x.stroke();x.globalAlpha=1;
+ // Carbon shoulder pads + sculpted chest yoke & team sponsor racing stripes
+ x.fillStyle='rgba(10,14,22,.62)';x.beginPath();x.ellipse(cx-w*.31,h*.69,w*.12,h*.07,-.35,0,TAU);x.fill();x.beginPath();x.ellipse(cx+w*.31,h*.69,w*.12,h*.07,.35,0,TAU);x.fill();
+ x.fillStyle=ac;x.beginPath();x.moveTo(cx-w*.30,h*.73);x.lineTo(cx+w*.30,h*.73);x.lineTo(cx+w*.26,h*.81);x.lineTo(cx-w*.26,h*.81);x.closePath();x.fill();
+ x.fillStyle='rgba(255,255,255,.22)';x.fillRect(cx-w*.26,h*.73,w*.52,2.5);
+ x.fillStyle=c3;x.fillRect(cx-w*.22,h*.83,w*.44,4);
+ // Center FIA race suit zipper & high Nomex fireproof collar + HANS pads
+ x.fillStyle='rgba(0,0,0,.45)';x.fillRect(cx-2.2,h*.58,4.4,h*.42);x.fillStyle='rgba(255,255,255,.35)';x.fillRect(cx-.7,h*.58,1.4,h*.42);
+ x.fillStyle='#141822';x.beginPath();x.roundRect(cx-w*.14,h*.50,w*.28,h*.10,6);x.fill();
+ x.strokeStyle=ac;x.lineWidth=1.5;x.strokeRect(cx-w*.12,h*.52,w*.24,h*.055);
+ // Team sponsor wordmark on chest
+ x.fillStyle='#0a0d14';x.font='900 '+Math.max(8,Math.round(w*.075))+'px "Segoe UI",Arial,sans-serif';x.textAlign='center';x.fillText((tm.b||tm.a).slice(0,9),cx,h*.785);
+ // Sculpted 3/4 Aerodynamic F1 Helmet (shaded multi-stop metallic shell + reflective tinted visor)
+ const hx=cx,hy=h*.34,hr=h*.205,dir=i?1:-1;
+ // Soft ambient shadow under helmet chin
+ x.fillStyle='rgba(0,0,0,.55)';x.beginPath();x.ellipse(hx,hy+hr*.92,hr*.82,hr*.26,0,0,TAU);x.fill();
+ const hBase=i?ac:'#eef2f8';
+ const hG=x.createRadialGradient(hx-dir*hr*.32,hy-hr*.36,hr*.12,hx,hy,hr*1.12);
+ hG.addColorStop(0,'#ffffff');hG.addColorStop(.32,hBase);hG.addColorStop(.78,cl);hG.addColorStop(1,'#0b0e16');
+ x.fillStyle=hG;x.beginPath();x.ellipse(hx,hy,hr*.95,hr*1.02,0,0,TAU);x.fill();
+ // Sculpted lower chin guard contour
+ x.fillStyle=hG;x.beginPath();x.moveTo(hx-hr*.82,hy+hr*.16);x.quadraticCurveTo(hx+dir*hr*.12,hy+hr*1.12,hx+hr*.84,hy+hr*.24);x.quadraticCurveTo(hx+dir*hr*.2,hy+hr*.78,hx-hr*.82,hy+hr*.16);x.fill();
+ // Crown racing livery stripe + geometric wing graphic
+ x.save();x.beginPath();x.ellipse(hx,hy,hr*.94,hr*1.01,0,0,TAU);x.clip();
+ x.fillStyle=i?cl:ac;x.beginPath();x.moveTo(hx-hr,hy-hr*.55);x.quadraticCurveTo(hx,hy-hr*.95,hx+hr,hy-hr*.22);x.lineTo(hx+hr,hy-hr*.02);x.quadraticCurveTo(hx,hy-hr*.55,hx-hr,hy-hr*.25);x.closePath();x.fill();
+ x.fillStyle=c3;x.fillRect(hx-hr,hy-hr*.18,hr*2,4);
+ // Curved glossy dark-mirror F1 visor with dynamic studio reflection sheen
+ const vx=hx+dir*hr*.16,vy=hy+hr*.08,vw=hr*1.48,vh=hr*.52;
+ const vG=x.createLinearGradient(vx-vw*.5,vy-vh*.5,vx+vw*.5,vy+vh*.5);
+ vG.addColorStop(0,'#060910');vG.addColorStop(.35,'#152842');vG.addColorStop(.55,ac);vG.addColorStop(.72,'#0d1422');vG.addColorStop(1,'#05070c');
+ x.fillStyle=vG;x.beginPath();x.ellipse(vx,vy,vw*.5,vh*.5,dir*.06,0,TAU);x.fill();
+ x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=1.4;x.stroke();
+ // Crisp top visor strip & specular reflection highlight
+ x.fillStyle=cl;x.fillRect(vx-vw*.48,vy-vh*.52,vw*.96,vh*.22);
+ x.fillStyle='rgba(255,255,255,.42)';x.beginPath();x.ellipse(vx-dir*vw*.14,vy-vh*.06,vw*.24,vh*.10,-.14,0,TAU);x.fill();
+ x.restore();
+ // Rim highlight halo on helmet edge
+ x.strokeStyle=ac;x.lineWidth=1.8;x.globalAlpha=.8;x.beginPath();x.arc(hx,hy,hr*.97,-Math.PI*.85,-Math.PI*.15);x.stroke();x.globalAlpha=1;
+ // Broadcast top-right Driver Number & 3-Letter Code pill
+ x.fillStyle='#ffffff';x.font='italic 900 '+Math.max(18,Math.round(h*.145))+'px "Segoe UI",Arial,sans-serif';x.textAlign='right';x.fillText(String(d[1]),w-8,Math.round(h*.155));
+ x.fillStyle=ac;x.fillRect(8,h-22,4,14);
+ x.fillStyle='rgba(255,255,255,.92)';x.font='800 '+Math.max(10,Math.round(w*.08))+'px "Segoe UI",Arial,sans-serif';x.textAlign='left';x.fillText(code,15,h-11);
+}
 
 const pitBox=t=>10+t*4;
 const LOGO={},logo=t=>LOGO[t]||(LOGO[t]=(()=>{const c=document.createElement('canvas');c.width=c.height=48;const x=c.getContext('2d'),m=TEAMS[t];x.fillStyle='#0b0f18';x.beginPath();x.arc(24,24,23,0,TAU);x.fill();x.save();x.beginPath();x.arc(24,24,20,0,TAU);x.clip();x.fillStyle=hex(m.c);x.fillRect(0,0,48,48);x.fillStyle=hex(m.d);x.beginPath();x.moveTo(0,34);x.lineTo(48,12);x.lineTo(48,22);x.lineTo(0,44);x.fill();x.restore();
