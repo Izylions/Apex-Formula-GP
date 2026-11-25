@@ -1,5 +1,5 @@
 /* Apex Formula GP · src/mobile/mobile.css — Mobile Web-only HUD, touch layout & lightweight GPU rules */
-#netDbg{position:fixed;left:50%;top:max(6px,env(safe-area-inset-top));transform:translateX(-50%);z-index:35;display:none;padding:3px 8px;border-radius:6px;background:rgba(8,12,22,.84)!important;border:1px solid rgba(255,255,255,.2)!important;color:#9ef0b8;font:700 10px/1.25 ui-monospace,Consolas,monospace;pointer-events:none}
+#netDbg{position:fixed;left:42%;top:max(6px,env(safe-area-inset-top));transform:translateX(-50%);z-index:35;display:none;padding:3px 7px;border-radius:6px;background:rgba(8,12,22,.84)!important;border:1px solid rgba(255,255,255,.2)!important;color:#9ef0b8;font:700 9.5px/1.25 ui-monospace,Consolas,monospace;pointer-events:none}
 #netDbg.on{display:block}
 /* Ensure mobile mode always uses lightweight compositor & touch controls */
 body.mobile #tc{display:block}
