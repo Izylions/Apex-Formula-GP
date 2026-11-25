@@ -70,7 +70,7 @@ table{width:100%;border-collapse:collapse}td,th{padding:5px 6px;border-bottom:1p
 #tc{display:none}
 .tb{position:absolute;width:84px;height:84px;border-radius:50%;pointer-events:auto;touch-action:none;-webkit-touch-callout:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;background:rgba(255,255,255,.18);border:1px solid var(--b);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .tb.p{background:rgba(255,255,255,.45)}
-@media (any-pointer:coarse){#tc{display:block}#tower{display:none}#tele{bottom:auto;top:56px;width:230px;padding:8px 12px}#spd{font-size:34px}#gear{font-size:28px}}
+@media (any-pointer:coarse){body.touch #tc{display:block}}
 
 /* ===== v2 high-contrast compact glass ===== */
 :root{--b:rgba(255,255,255,.22);--t2:#d8dee9}
@@ -114,7 +114,7 @@ td,th{padding:4px 6px;font-size:14px}th{color:var(--t2);font-weight:600}
 body.touch #tc{display:block}body.touch #tower{display:none}
 #hint{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);padding:8px 16px;font-size:13px;text-align:center;transition:opacity .6s}
 #tgl{position:absolute;right:12px;top:222px;font-size:12px;padding:4px 12px}
-@media (any-pointer:coarse){#mm{right:auto;left:10px;top:10px;width:100px;height:100px}#lnb{right:auto;left:10px;top:116px}#tele{top:52px;bottom:auto;right:10px}}
+body.pc:not(.touch) #tc{display:none}body.pc:not(.touch) #tower{display:block}
 
 /* ---- Restored Glassmorphism Menu UI (modest 12px blur for 60 FPS) ---- */
 :root{--b:rgba(255,255,255,.22);--ac:#ff3b30;--t2:#dde4f0;font-family:-apple-system,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.2px}
@@ -156,7 +156,7 @@ th{text-transform:uppercase;font-size:12px;opacity:.75;letter-spacing:.8px}
 .qbtn{border-radius:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;background:rgba(12,18,30,.58);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 
 /* ---- Batch 1: compact racing HUD (bottom-centre) ---- */
-#tele{left:50%;right:auto;bottom:10px;transform:translateX(-50%);width:306px;padding:9px 14px 8px;border-left:0;border-radius:12px;background:rgba(10,15,24,.9);font-family:"Chakra Petch","Barlow Condensed",Arial,sans-serif}
+#tele{left:50%;right:auto;top:auto;bottom:10px;transform:translateX(-50%);width:306px;padding:9px 14px 8px;border-left:0;border-radius:12px;background:rgba(10,15,24,.9);font-family:"Chakra Petch","Barlow Condensed",Arial,sans-serif}
 #rev{justify-content:center;gap:4px;margin-bottom:6px}#rev i{flex:none;width:8px;height:8px;border-radius:50%;transform:none;box-shadow:0 0 4px rgba(0,0,0,.5)}
 #tele .rw{justify-content:center;gap:8px;align-items:baseline;flex-wrap:nowrap}
 #gear{display:inline-flex;align-items:center;justify-content:center;width:42px;height:44px;border-radius:7px;background:#f4f5f7;color:#10151f;font-size:30px;font-weight:700;font-style:normal;align-self:center}

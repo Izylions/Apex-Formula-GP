@@ -68,7 +68,50 @@ class Track{
   this.dz=runs.filter(r=>r[1]>=45).sort((a,b)=>b[1]-a[1]).slice(0,d.dzn||2).map(r=>[r[0]+8,r[0]+r[1]-8]);if(!this.dz.length)this.dz=[[3,90]];
   const E=d.el||[[0,0],[1,0]],el=t=>{for(let q=0;q<E.length-1;q++)if(t<=E[q+1][0]){const u=(t-E[q][0])/(E[q+1][0]-E[q][0]||1);return(E[q][1]+(E[q+1][1]-E[q][1])*(1-Math.cos(u*Math.PI))/2)*5}return E[E.length-1][1]*5};
   this.ey=this.s.map(v=>el(v/this.L));this.gy=Math.min(...this.ey)-4;
-  this.tun=null;if(d.tun){let b=1e18,bi=0;for(let i=0;i<N;i++){const dx=this.x[i]-d.tun[0]*sc,dy=this.y[i]-d.tun[1]*sc,q=dx*dx+dy*dy;if(q<b){b=q;bi=i}}this.tun=[bi,90]}
+  this.tun=null;if(d.tun){let b=1e18,bi=0;for(let i=0;i<N;i++){const dx=this.x[i]-d.tun[0]*sc,dy=this.y[i]-d.tun[1]*sc,q=dx*dx+dy*dy;if(q<b){b=q;bi=i}}this.tun=[bi,d.tun[2]||90]}
+  // Per-segment, per-side safe dynamic barrier & gravel/sand offsets (zero curve bow-tie fold, zero adjacent-lane intrusion)
+  this.bwL=new Float32Array(N);this.bwR=new Float32Array(N);this.gvL=new Float32Array(N);this.gvR=new Float32Array(N);
+  const hw=this.hw,minBw=hw+12,pitMinR=Math.min(d.bw,114+this.S),st=d.gv>1e8;
+  for(const s of[-1,1]){
+   const cap=new Float32Array(N);
+   for(let i=0;i<N;i++){
+    let c=d.bw;
+    const kIn=Math.max(0,s*rawK[i],s*this.ks[i]);
+    if(kIn>1e-5)c=Math.min(c,Math.max(minBw,.80/kIn));
+    if(this.tun&&((i-this.tun[0]+N)%N)<this.tun[1])c=Math.min(c,62);
+    const nx=-this.ty[i]*s,ny=this.tx[i]*s;
+    for(let j=0;j<N;j++){
+     const dj=Math.min(Math.abs(j-i),N-Math.abs(j-i));
+     if(dj<14)continue;
+     const dx=this.x[j]-this.x[i],dy=this.y[j]-this.y[i],pn=dx*nx+dy*ny;
+     if(pn<=0||pn>c+hw+24)continue;
+     const pt=Math.abs(dx*this.tx[i]+dy*this.ty[i]);
+     if(pt<hw+18){
+      const clr=pn-Math.sqrt(Math.max(0,(hw+18)*(hw+18)-pt*pt));
+      const mid=pn*.5-5;
+      c=Math.min(c,Math.max(minBw,Math.min(clr,mid)));
+     }
+    }
+    if(s>0&&this.pitOff(i)!=null)c=Math.max(c,pitMinR);
+    cap[i]=c;
+   }
+   // Envelope-safe smoothing: smooth transitions into/out of tight corners while NEVER exceeding hard safety cap
+   let arr=new Float32Array(cap);
+   for(let p=0;p<8;p++){const nxt=new Float32Array(N);for(let i=0;i<N;i++){const a=(i+N-1)%N,b=(i+1)%N;nxt[i]=Math.min(cap[i],arr[a]*.25+arr[i]*.5+arr[b]*.25)}arr=nxt}
+   // Final segment-level backfold & road-clearance guarantee
+   for(let p=0;p<6;p++){
+    for(let i=0;i<N;i++){
+     const j=(i+1)%N,ax=this.x[i]-this.ty[i]*(s*arr[i]),ay=this.y[i]+this.tx[i]*(s*arr[i]),bx=this.x[j]-this.ty[j]*(s*arr[j]),by=this.y[j]+this.tx[j]*(s*arr[j]);
+     if((bx-ax)*this.tx[i]+(by-ay)*this.ty[i]<=1.5){arr[i]=Math.max(minBw,arr[i]*.92);arr[j]=Math.max(minBw,arr[j]*.92)}
+    }
+   }
+   const dstBw=s<0?this.bwL:this.bwR,dstGv=s<0?this.gvL:this.gvR;
+   for(let i=0;i<N;i++){
+    dstBw[i]=arr[i];
+    if(st)dstGv[i]=1e9;
+    else dstGv[i]=arr[i]>=hw+32?Math.max(hw+24,Math.min(d.gv,arr[i]-14)):arr[i];
+   }
+  }
  }
  strip(o1,d1,o2,d2,col,i0,cnt,ab,uvf){const N=this.N,P=[],C=[],U=[],I=[],O=(o,q)=>typeof o==='function'?o(q):o;i0=i0||0;cnt=cnt||N;
   for(let k=0;k<cnt;k++){const i=(i0+k)%N,j=(i+1)%N,c=new THREE.Color(typeof col==='function'?col(i):col);
@@ -79,7 +122,8 @@ class Track{
  at(i,o){const N=this.N;i=(i%N+N)%N;return{x:this.x[i]-this.ty[i]*o,y:this.ey[i],z:this.y[i]+this.tx[i]*o}}
  near(x,y,h){const N=this.N,full=h<0,R=full?N:61;let b=1e18,bi=0;for(let k=0;k<R;k++){const i=full?k:((h-30+k)%N+N)%N,dx=x-this.x[i],dy=y-this.y[i],q=dx*dx+dy*dy;if(q<b){b=q;bi=i}}return bi}
  side(x,y,i){return -(x-this.x[i])*this.ty[i]+(y-this.y[i])*this.tx[i]}
- bwAt(i){return this.tun&&((i-this.tun[0]+this.N)%this.N)<this.tun[1]?62:this.bw}
+ bwAt(i,s){const q=(i%this.N+this.N)%this.N,b=s<0?this.bwL[q]:s>0?this.bwR[q]:Math.min(this.bwL[q],this.bwR[q]);return this.tun&&((q-this.tun[0]+this.N)%this.N)<this.tun[1]?Math.min(62,b):b}
+ gvAt(i,s){const q=(i%this.N+this.N)%this.N;return s<0?this.gvL[q]:this.gvR[q]}
  inDrs(i){return this.dz.some(z=>(i-z[0]+this.N)%this.N<=z[1]-z[0])}
  lineHeat(i){const N=this.N;let m=0;for(let q=0;q<4;q++)m=Math.max(m,this.dec[(i+q)%N]);return Math.max(clamp(m/150,0,1),clamp((380-this.vl[i])/200,0,.55))}
  pitOff(i){const N=this.N,pe=this.pe,px=this.px,u=i>=N-pe?i-N:i;if(u<-pe||u>px)return null;const r=20,S=this.S;return u<-pe+r?36+S+43*(u+pe)/r:u>px-r?79+S-43*(u-px+r)/r:79+S}
