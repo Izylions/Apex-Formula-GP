@@ -11,6 +11,7 @@ window.APEX_PLATFORM = {
   ersP: 300,
   hudMs: 33,       // ~30 Hz HUD refresh
   mmMs: 50,        // ~20 Hz minimap refresh
+  defaultFpsCap: 120,
   crowdWave: true,
   fxVignette: true
  },
