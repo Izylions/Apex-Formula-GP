@@ -168,16 +168,18 @@ th{text-transform:uppercase;font-size:12px;opacity:.75;letter-spacing:.8px}
 #tinfo{display:block;font-size:10px;opacity:.72;text-align:center;margin-top:4px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* top-left lap panel, top-centre race control banner, top-right minimap (below #qb) */
 #lapi{left:12px;top:12px;transform:none;padding:8px 14px;font-size:15px;text-align:left;border-radius:10px;border-left:0;background:rgba(10,15,24,.88);font-family:"Chakra Petch",Arial,sans-serif}
-#msg{top:12px;left:50%;width:auto;max-width:min(560px,46vw);transform:translateX(-50%);padding:8px 14px;font-size:13px;font-style:normal;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:rgba(10,15,24,.88);border-radius:6px;text-shadow:none;font-family:"Chakra Petch",Arial,sans-serif}
+#msg{top:12px;left:50%;width:auto;max-width:min(450px,42vw);transform:translateX(-50%);padding:8px 16px;font-size:15px;font-style:normal;font-weight:800;letter-spacing:.6px;text-transform:uppercase;background:rgba(10,15,24,.9);border:1.5px solid rgba(255,255,255,.26);border-radius:10px;text-shadow:0 1px 4px rgba(0,0,0,.6);font-family:"Chakra Petch",Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.45);transition:background .15s,border-color .15s}
 #msg:empty{display:none}
+#msg.warn{background:linear-gradient(135deg,rgba(68,46,0,.96),rgba(34,22,0,.96))!important;border:2px solid #ffd026!important;border-left:6px solid #ffb300!important;color:#fff4bf!important;box-shadow:0 0 26px rgba(255,196,0,.42),0 8px 24px rgba(0,0,0,.55)!important}
+#msg.pit{background:linear-gradient(135deg,rgba(12,38,62,.95),rgba(10,20,36,.95))!important;border:2px solid #38c4ff!important;border-left:6px solid #ffd026!important;color:#e6f6ff!important}
 #tower{top:64px;left:12px;border-left:0;border-radius:10px;background:rgba(10,15,24,.82);min-width:190px;font-size:12px}
-#mm{border-radius:12px;background:rgba(10,15,24,.78);border:1px solid rgba(255,255,255,.28);right:12px;top:56px}
-#lnb{top:196px}#camb{position:absolute;right:12px;top:226px;font-size:12px;padding:4px 12px}#tgl{top:256px}
-.qbtn{font-family:"Chakra Petch",Arial,sans-serif;border-radius:8px}
+#mm{border-radius:14px;background:rgba(10,15,24,.82);border:1.5px solid rgba(255,255,255,.32);right:12px;top:56px;width:176px;height:176px;box-shadow:0 10px 28px rgba(0,0,0,.52)}
+#lnb{top:240px}#camb{position:absolute;right:12px;top:270px;font-size:12px;padding:4px 12px}#tgl{top:300px}
+.qbtn{font-family:"Chakra Petch",Arial,sans-serif;border-radius:8px;position:relative}
 
 /* ---- Phase 1 & 2B: Adjustable Mobile HUD, Scoreboard Tyre Badges & Landscape Menu UI ---- */
 /* Easy Mobile vs PC HUD tuning variables (--btn-sc controlled by Settings -> Touch button size, default 1.15x) */
-:root{--btn-sc:1.15;--mob-btn:calc(60px * var(--btn-sc));--mob-sm:calc(42px * var(--btn-sc));--mob-gap:8px;--mob-alpha:.38;--mob-hud-bg:rgba(8,12,20,.56)}
+:root{--btn-sc:1.15;--mob-btn:min(calc(72px * var(--btn-sc)), 22.5dvh);--mob-sm:min(calc(46px * var(--btn-sc)), 13.5dvh);--mob-gap:9px;--mob-alpha:.46;--mob-hud-bg:rgba(8,12,20,.64)}
 /* Scoreboard tyre compound badge (PC & Mobile) */
 #tower .tr .ty{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;font-size:10px;font-weight:900;font-style:normal;color:#0c1018;flex:none;line-height:1;border:1px solid rgba(0,0,0,.45)}
 #tower .tr .ty.S{background:#ff2a2a;color:#fff}#tower .tr .ty.M{background:#ffd400;color:#111}#tower .tr .ty.H{background:#f2f4f8;color:#111}
@@ -188,9 +190,11 @@ html,body{width:100vw;height:100vh;height:100dvh;touch-action:none;-webkit-user-
 @media (max-width:760px) and (orientation:portrait){body.touch #rot{display:flex}}
 /* Sleek corner-tucked touch controls (adjustable size via --btn-sc, default ~69px side pads for easy Gas/Brake/Turn) */
 #tc{position:fixed;inset:0;pointer-events:none;z-index:12}
-#tc .tb{width:var(--mob-btn);height:var(--mob-btn);min-width:44px;min-height:44px;font-size:12px;font-weight:800;letter-spacing:.5px;color:rgba(255,255,255,.94);background:rgba(10,16,28,var(--mob-alpha));border:1.5px solid rgba(255,255,255,.32);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;transition:transform .06s ease,background .06s ease}
-#tc .tb.p{background:rgba(255,59,48,.74);border-color:#fff;transform:scale(.94)}
-#tc .tb.smt{width:var(--mob-sm);height:var(--mob-sm);font-size:10px;border-radius:12px}
+#tc .tb{width:var(--mob-btn);height:var(--mob-btn);min-width:56px;min-height:56px;font-size:13px;font-weight:900;letter-spacing:.6px;flex-direction:column;gap:1px;line-height:1.05;color:rgba(255,255,255,.96);background:rgba(10,16,28,var(--mob-alpha));border:2px solid rgba(255,255,255,.38);box-shadow:0 4px 14px rgba(0,0,0,.35);backdrop-filter:none;-webkit-backdrop-filter:none;transition:transform .06s ease,background .06s ease}
+#tc .tb .ti{font-size:18px;line-height:1}
+#tc .tb small{font-size:9px;letter-spacing:.6px;color:rgba(255,255,255,.88);font-weight:800}
+#tc .tb.p{background:rgba(255,59,48,.82);border-color:#fff;transform:scale(.93)}
+#tc .tb.smt{width:var(--mob-sm);height:var(--mob-sm);min-width:44px;min-height:44px;font-size:10.5px;border-radius:12px}
 #tL{left:max(10px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom))}
 #tR{left:calc(max(10px,env(safe-area-inset-left)) + var(--mob-btn) + var(--mob-gap));bottom:max(10px,env(safe-area-inset-bottom))}
 #tG{right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));background:rgba(24,168,78,.4)!important;border-color:rgba(72,235,130,.55)}
@@ -215,8 +219,8 @@ body.touch #tower .tr span{font-size:9.5px;justify-content:flex-start;overflow:h
 body.touch #tower .tr .ty{width:13px;height:13px;font-size:8.5px}
 body.touch #tower .tr em{min-width:28px;font-size:9px}
 body.touch #tower .tr.mhid{display:none}
-/* Compact minimap moved top-right below #qb on mobile — enlarged 92x92px for crisp corner reading */
-body.touch #mm{left:auto;right:max(8px,env(safe-area-inset-right));top:calc(max(6px,env(safe-area-inset-top)) + 42px);width:92px;height:92px;border-radius:10px;background:rgba(8,12,20,.62);border:1.5px solid rgba(255,255,255,.26);box-shadow:0 4px 12px rgba(0,0,0,.35);opacity:.94}
+/* Enlarged minimap top-right below #qb on mobile — crisp corner & car reading without scrolling */
+body.touch #mm{left:auto;right:max(8px,env(safe-area-inset-right));top:calc(max(6px,env(safe-area-inset-top)) + 40px);width:clamp(104px,28dvh,124px);height:clamp(104px,28dvh,124px);border-radius:12px;background:rgba(8,12,20,.72);border:1.5px solid rgba(255,255,255,.34);box-shadow:0 6px 16px rgba(0,0,0,.42);opacity:.96}
 /* Ultra-sleek bottom-edge telemetry pill */
 body.touch #tele{left:50%;right:auto;bottom:max(6px,env(safe-area-inset-bottom));top:auto;transform:translateX(-50%);width:auto;min-width:148px;padding:4px 9px 5px;border-radius:10px;background:var(--mob-hud-bg);backdrop-filter:none;-webkit-backdrop-filter:none;border:1px solid rgba(255,255,255,.16);box-shadow:none}
 body.touch #rev{gap:2px;margin-bottom:3px}body.touch #rev i{width:5px;height:3px;border-radius:2px;box-shadow:none}
@@ -227,7 +231,7 @@ body.touch #tele .rw small{font-size:9px;opacity:.7}
 body.touch .ped,body.touch #tinfo{display:none!important}
 body.touch #tele .rw2{margin-top:3px;gap:5px}body.touch #tele .bar{max-width:64px;height:4px}
 body.touch #drs{font-size:9px;padding:1px 5px}body.touch #tyb{width:16px;height:16px;font-size:9px}
-body.touch #msg{top:calc(max(6px,env(safe-area-inset-top)) + 34px);font-size:10px;padding:3px 8px;background:var(--mob-hud-bg)}
+body.touch #msg{top:calc(max(6px,env(safe-area-inset-top)) + 36px);max-width:min(360px,54vw);font-size:12px;padding:5px 11px;background:rgba(10,15,24,.92)}
 body.touch #lights{top:calc(max(6px,env(safe-area-inset-top)) + 56px);padding:5px 8px;background:var(--mob-hud-bg);backdrop-filter:none;-webkit-backdrop-filter:none}body.touch #lights i{width:18px;height:18px}
 /* Small-screen & mobile landscape menu/modal optimization */
 @media (max-height:500px),(max-width:700px){
@@ -301,4 +305,64 @@ body.touch #fx{display:none!important}
 @media (hover:none){
  .btn:hover:not(.on):not(.go):not(.go2):not(.tchip):not(.is-pressed),.qbtn:hover:not(.is-pressed),.mcard:hover:not(.is-pressed),.tcard:hover:not(.on):not(.is-pressed),.dcard:hover:not(.on):not(.is-pressed){transform:none!important}
  .mi:hover:not(.sel):not(.is-pressed){transform:none!important;background:none;border-color:transparent}
+}
+
+/* ---- v1.3.0 Race Length Chips, Pit Limiter HUD, 80 km/h Pit Compound Popup & Main Menu News Modal ---- */
+.lgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%}
+.lchip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:7px 6px!important;line-height:1.15;text-align:center}
+.lchip .lc-n{font-size:12.5px;font-weight:800;color:#fff}
+.lchip .lc-s{font-size:9.5px;font-weight:600;color:#c8d4e8;letter-spacing:.15px}
+.lchip.on .lc-s,.lchip.is-selected .lc-s{color:#ffeaea}
+/* Pit Lane 80 km/h Speed Limit HUD */
+#pitLim{position:absolute;left:50%;top:66px;transform:translateX(-50%);display:none;align-items:center;gap:10px;padding:7px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(48,32,0,.95),rgba(18,12,0,.95))!important;border:2px solid #ffd026!important;box-shadow:0 0 22px rgba(255,196,0,.38),0 8px 20px rgba(0,0,0,.5);font-family:"Chakra Petch",Arial,sans-serif;z-index:22;pointer-events:none}
+#pitLim.on{display:flex}
+#pitLim .pl-badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#fff;color:#111;border:4px solid #e31b23;font-size:15px;font-weight:900;flex:none;box-shadow:0 0 10px rgba(227,27,35,.6)}
+#pitLim b{display:block;font-size:13px;letter-spacing:.8px;color:#ffd84d}
+#pitLim small{display:block;font-size:10px;letter-spacing:.6px;color:#fff}
+/* 80 km/h Auto-Cruise Pit Tyre Compound Selection Popup */
+#pitPop{position:absolute;left:50%;bottom:138px;transform:translateX(-50%);width:min(410px,90vw);display:none;flex-direction:column;gap:7px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,rgba(12,18,32,.96),rgba(8,12,22,.96))!important;border:2px solid #ffd026!important;box-shadow:0 0 30px rgba(255,196,0,.28),0 14px 36px rgba(0,0,0,.65);pointer-events:auto;z-index:28;font-family:"Chakra Petch",Arial,sans-serif}
+#pitPop.on{display:flex}
+.pp-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pp-hdr b{font-size:14px;letter-spacing:.8px;color:#ffd84d}
+#ppTm{padding:2px 8px;border-radius:999px;background:#ff3b30;color:#fff;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
+.pp-sub{margin:0;font-size:11px;color:#d6e0f0}
+.pp-bar{height:5px;border-radius:4px;background:rgba(255,255,255,.16);overflow:hidden}
+#ppBar{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffd026,#ff3b30);transition:width .08s linear}
+.pp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.pp-btn{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px!important;border-radius:12px!important;background:rgba(20,28,46,.9)!important;border:2px solid rgba(255,255,255,.22)!important;color:#fff;cursor:pointer;font:inherit;text-align:center}
+.pp-btn .pp-rec{position:absolute;top:-7px;right:4px;padding:1px 5px;border-radius:999px;background:#ffd026;color:#111;font-size:8px;font-weight:900;letter-spacing:.4px}
+.pp-btn .tc-top{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:800}
+.pp-btn .tc-dot{width:10px;height:10px;border-radius:50%;box-shadow:0 0 6px currentColor}
+.pp-btn .tc-meta{font-size:9.5px;color:#c8d4e8}
+.pp-btn.on{border-color:#fff!important;box-shadow:0 0 0 2px rgba(255,255,255,.6),0 0 18px rgba(255,208,38,.5)!important;transform:translateY(-1px)}
+.pp-btn[data-t="S"].on{background:linear-gradient(180deg,rgba(255,42,42,.52),rgba(130,14,20,.92))!important;border-color:#ff5454!important}
+.pp-btn[data-t="M"].on{background:linear-gradient(180deg,rgba(255,212,0,.46),rgba(128,96,0,.92))!important;border-color:#ffd400!important}
+.pp-btn[data-t="H"].on{background:linear-gradient(180deg,rgba(242,244,248,.40),rgba(82,90,108,.92))!important;border-color:#fff!important}
+#ppOk{margin-top:2px;padding:8px 12px;font-size:13px}
+/* News / Patch Notes Unread Red Pulsing Badge & Modal */
+.ndot{position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;background:#ff2a2a;border:2px solid #fff;box-shadow:0 0 10px #ff2a2a,0 0 18px rgba(255,42,42,.85);animation:newsPulse 1.5s infinite ease-in-out}
+.ndot.read{display:none}
+@keyframes newsPulse{0%,100%{transform:scale(1);box-shadow:0 0 8px #ff2a2a,0 0 0 0 rgba(255,42,42,.75)}50%{transform:scale(1.18);box-shadow:0 0 14px #ff4d4d,0 0 0 7px rgba(255,42,42,0)}}
+.news-mc{width:min(620px,94vw);max-height:88dvh;overflow-y:auto}
+.nhdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.nver{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#ff3b30;color:#fff;font-size:12px;font-weight:800;vertical-align:middle}
+#newsList{display:grid;gap:8px;margin:10px 0}
+.nitem{padding:10px 12px;border-radius:12px;background:rgba(12,18,30,.66);border:1px solid rgba(255,255,255,.16);border-left:4px solid #ff3b30}
+.nitem .ntop{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.nitem .ntag{padding:2px 6px;border-radius:6px;font-size:9.5px;font-weight:900;letter-spacing:.6px;background:rgba(255,59,48,.24);color:#ff8a80;border:1px solid rgba(255,80,70,.45)}
+.nitem .ntag.PHYSICS,.nitem .ntag.PIT{background:rgba(255,208,38,.2);color:#ffd84d;border-color:rgba(255,208,38,.45)}
+.nitem .ntag.FIX{background:rgba(56,224,123,.2);color:#6df0a4;border-color:rgba(56,224,123,.45)}
+.nitem .ntag.VISUALS{background:rgba(56,182,255,.22);color:#7fd4ff;border-color:rgba(56,182,255,.45)}
+.nitem b{font-size:14px;color:#fff}
+.nitem p{margin:2px 0 0;font-size:12.5px;color:#d6e0f0;line-height:1.4}
+@media (max-height:500px){
+ .lgrid{grid-template-columns:repeat(2,1fr);gap:4px}.lchip{padding:4px 5px!important}.lchip .lc-n{font-size:11px}.lchip .lc-s{font-size:8.5px}
+ body.touch #pitLim{top:calc(max(6px,env(safe-area-inset-top)) + 68px);padding:4px 9px;gap:7px}
+ body.touch #pitLim .pl-badge{width:24px;height:24px;font-size:11px;border-width:3px}
+ body.touch #pitLim b{font-size:10.5px}body.touch #pitLim small{font-size:8.5px}
+ body.touch #pitPop{bottom:auto;top:50%;transform:translate(-50%,-50%);width:min(340px,78vw);padding:8px 10px;gap:5px}
+ body.touch #pitPop .pp-hdr b{font-size:11.5px}body.touch #pitPop .pp-sub{font-size:9.5px}
+ body.touch #pitPop .pp-btn{padding:5px 4px!important}body.touch #pitPop .pp-btn .tc-top{font-size:10.5px}body.touch #pitPop .pp-btn .tc-meta{font-size:8px}
+ body.touch #pitPop #ppOk{padding:6px 10px;font-size:11.5px}
 }

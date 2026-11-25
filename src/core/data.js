@@ -15,7 +15,26 @@ const TEAMS=[
  {n:'Audi',a:'AUD',b:'AUDI F1',c:0xc4c8ce,d:0xf50537,c3:0x16181e,wc:0x1a1c22,rw:0xf50537,s:.91},
  {n:'Cadillac',a:'CAD',b:'CADILLAC',c:0x181c24,d:0xf0b818,c3:0xd81b28,n2:0x2b303b,wc:0x1c2028,rw:0x181c24,s:.905}
 ];
-const TIRES={S:{n:'SOFT',g:1.05,w:.50,t:5,c:0xff2a2a},M:{n:'MEDIUM',g:1.0,w:.24,t:8,c:0xffd400},H:{n:'HARD',g:.94,w:.125,t:13,c:0xf2f2f2}};
+// Recalibrated F1 tyre endurance: Soft ~5-10 laps, Medium ~10-15 laps, Hard ~15-20 laps
+const TIRES={
+ S:{n:'SOFT',g:1.05,w:.115,t:5,c:0xff2a2a,meta:'Max Grip · 5–10 Laps'},
+ M:{n:'MEDIUM',g:1.0,w:.068,t:8,c:0xffd400,meta:'Balanced · 10–15 Laps'},
+ H:{n:'HARD',g:.94,w:.048,t:13,c:0xf2f2f2,meta:'Endurance · 15–20 Laps'}
+};
+const RACE_LENGTHS=[
+ {v:3,n:'Very Short',sub:'3 laps · ~5m prac',pracSec:300},
+ {v:5,n:'Short',sub:'5 laps · ~5m prac',pracSec:300},
+ {v:15,n:'Half Full',sub:'15 laps · ~10m prac',pracSec:600},
+ {v:30,n:'Full',sub:'30 laps · ~10m prac',pracSec:600}
+];
+const APP_VER='1.3.0';
+const PATCH_NOTES=[
+ {tag:'NEW',t:'Race Length Modes & Lap-Free Practice',d:'Choose Very Short (3), Short (5), Half Full (15), or Full (30 laps). Practice is now lap-free with a live session timer (~5m Short / ~10m Full) and manual End Practice option.'},
+ {tag:'PHYSICS',t:'Recalibrated Tyres & AI Pit Stop Strategy',d:'Soft lasts ~5–10 laps, Medium ~10–15 laps, Hard ~15–20 laps. AI teams now execute multi-stop strategies, pit for worn tyres or wing damage, and fit compounds for remaining laps.'},
+ {tag:'FIX',t:'Precision Steering & Larger Controls / Minimap',d:'Removed worn-tyre steering wobble and assist sign-flip—Left always steers left and Right always steers right. Enlarged minimap on PC & Mobile and oversized mobile touch pads.'},
+ {tag:'PIT',t:'80 km/h Pit Compound Popup & Warning Banners',d:'Entering pit autopilot opens a 4-second tyre compound selector with team recommendation auto-fallback, paired with a bold 80 km/h Pit Limiter badge and amber hazard banners.'},
+ {tag:'VISUALS',t:'Richer 3D Scenery, Fireworks & Scalable Graphics',d:'Upgraded sculpted mountains, cantilevered grandstands, stepped skyline buildings, Victory Outro fireworks, plus Shadows, Ray-Traced Reflections FX & HD Resolution Scale settings.'}
+];
 ['Italy','United Kingdom','United Kingdom','Germany / UK','United Kingdom','France','United Kingdom','Italy','USA','Germany','USA'].forEach((c,i)=>TEAMS[i].co=c);
 const ROSTERS={
  2026:[

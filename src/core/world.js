@@ -16,8 +16,10 @@ function mkTX(){if(TX.a)return;
  TX.gr=mkt(256,256,(x,w,h)=>{x.fillStyle='#d6caa8';x.fillRect(0,0,w,h);for(let i=0;i<16000;i++){const v=145+Math.random()*95|0;x.fillStyle=`rgb(${v},${v-8},${v-22})`;x.fillRect(Math.random()*w,Math.random()*h,2,2)}});
  // Modern motorsport reflective glass & aluminum louver building facade
  TX.b=mkt(256,256,(x,w,h)=>{x.fillStyle='#dce2ea';x.fillRect(0,0,w,h);for(let r=0;r<4;r++){const y=10+r*62;const g=x.createLinearGradient(0,y,0,y+40);g.addColorStop(0,'#1a3552');g.addColorStop(.5,'#2e587e');g.addColorStop(1,'#0d1e30');x.fillStyle=g;x.fillRect(8,y,w-16,40);x.fillStyle='rgba(255,255,255,.16)';x.fillRect(10,y+4,w-20,6);x.fillStyle='#6c7684';for(let c=0;c<6;c++)x.fillRect(8+c*40,y,3,40)}});
+ // Detailed daylight European/urban apartment & tower facade with balconies and recessed windows
+ TX.city=mkt(256,256,(x,w,h)=>{x.fillStyle='#e8e2d6';x.fillRect(0,0,w,h);for(let r=0;r<8;r++){const y=4+r*32;x.fillStyle='rgba(0,0,0,.08)';x.fillRect(0,y+26,w,4);for(let c=0;c<6;c++){const X=8+c*41;const g=x.createLinearGradient(0,y,0,y+20);g.addColorStop(0,'#27425d');g.addColorStop(1,'#142538');x.fillStyle=g;x.fillRect(X,y+2,26,20);x.fillStyle='rgba(255,255,255,.22)';x.fillRect(X+2,y+4,22,4);x.fillStyle='#c4bcb0';x.fillRect(X-3,y+21,32,4)}}});
  // Organic mountain slope rock & tropical forest texture
- TX.mt=mkt(256,256,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#c6d0cc');g.addColorStop(.35,'#98ab9e');g.addColorStop(1,'#627d66');x.fillStyle=g;x.fillRect(0,0,w,h);for(let i=0;i<3600;i++){const v=110+Math.random()*90|0;x.fillStyle=`rgba(${v},${v+12},${v},.18)`;x.fillRect(Math.random()*w,Math.random()*h,3,5)}});
+ TX.mt=mkt(256,256,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#d4dcd8');g.addColorStop(.28,'#9ea9a2');g.addColorStop(.62,'#6f8772');g.addColorStop(1,'#4d6852');x.fillStyle=g;x.fillRect(0,0,w,h);for(let i=0;i<4200;i++){const v=100+Math.random()*100|0;x.fillStyle=`rgba(${v},${v+10},${v},.20)`;x.fillRect(Math.random()*w,Math.random()*h,3,6)}});
  TX.n=mkt(512,512,(x,w,h)=>{x.fillStyle='#d8d8d8';x.fillRect(0,0,w,h);for(let i=0;i<30000;i++){const v=165+Math.random()*90|0;x.fillStyle=`rgb(${v},${v},${v})`;x.fillRect(Math.random()*w,Math.random()*h,1.5+Math.random()*1.5,1.5+Math.random()*1.5)}});
  TX.w=mkt2(256,64,4,(x,w,h)=>{x.fillStyle='#d6d8dc';x.fillRect(0,0,w,h);x.fillStyle='rgba(0,0,0,.18)';for(let i=1;i<4;i++)x.fillRect(i*64-1,0,2,h);x.fillRect(0,h-6,w,6);for(let i=0;i<500;i++){x.fillStyle=`rgba(0,0,0,${Math.random()*.08})`;x.fillRect(Math.random()*w,Math.random()*h,3,3)}});
  TX.sp=mkt2(SP.length*300,64,2,(x,w,h)=>{x.textAlign='center';x.textBaseline='middle';SP.forEach((b,i)=>{const pw=300;x.fillStyle=b[1];x.fillRect(i*pw,0,pw,h);x.fillStyle='rgba(255,255,255,.12)';x.fillRect(i*pw,0,pw,h*.1);let fs=34;do{x.font='bold '+fs+'px Arial';fs--}while(fs>12&&x.measureText(b[0]).width>pw-36);x.fillStyle=b[2];x.fillText(b[0],i*pw+pw/2,h/2+1);x.fillStyle='rgba(255,255,255,.4)';x.fillRect(i*pw,0,3,h)});x.fillStyle='rgba(0,0,0,.3)';x.fillRect(0,h-5,w,5)});
@@ -306,4 +308,58 @@ function partTex(){if(PTEX)return PTEX;const c=document.createElement('canvas');
 class Parts{constructor(n,col,size){this.n=n;this.p=new Float32Array(n*3).fill(-9999);this.v=new Float32Array(n*3);this.t=new Float32Array(n);this.i=0;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(this.p,3));this.m=new THREE.Points(g,new THREE.PointsMaterial({map:partTex(),color:col,size,transparent:true,opacity:.78,blending:THREE.AdditiveBlending,depthWrite:false}));this.m.frustumCulled=false}
  emit(x,y,z,vx,vy,vz,l){const k=this.i++%this.n;this.p.set([x,y,z],k*3);this.v.set([vx,vy,vz],k*3);this.t[k]=l}
  step(dt,g){for(let k=0;k<this.n;k++)if(this.t[k]>0){this.t[k]-=dt;const j=k*3;this.v[j+1]-=g*dt;this.p[j]+=this.v[j]*dt;this.p[j+1]+=this.v[j+1]*dt;this.p[j+2]+=this.v[j+2]*dt;if(this.t[k]<=0)this.p[j+1]=-9999}this.m.geometry.attributes.position.needsUpdate=true}}
+
+// Pooled multi-color 3D radial Fireworks particle system (victory/podium celebration, zero GC churn)
+class Fireworks{
+ constructor(n,size){
+  this.n=n;this.p=new Float32Array(n*3).fill(-9999);this.v=new Float32Array(n*3);this.c=new Float32Array(n*3);this.bc=new Float32Array(n*3);this.t=new Float32Array(n);this.lt=new Float32Array(n);this.i=0;this.active=0;
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(this.p,3));
+  g.setAttribute('color',new THREE.BufferAttribute(this.c,3));
+  this.m=new THREE.Points(g,new THREE.PointsMaterial({map:partTex(),size:size||5.8,vertexColors:true,transparent:true,opacity:.96,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
+  this.m.frustumCulled=false;
+ }
+ burst(x,y,z,colHex,count){
+  const col=new THREE.Color(colHex||0xffd43b),col2=col.clone().lerp(new THREE.Color(0xffffff),.42),cnt=count||56;
+  for(let q=0;q<cnt;q++){
+   const k=this.i++%this.n,j=k*3,th=Math.random()*TAU,ph=Math.acos(rnd(-1,1)),sp=rnd(38,118);
+   const vx=Math.sin(ph)*Math.cos(th)*sp,vy=Math.cos(ph)*sp+26,vz=Math.sin(ph)*Math.sin(th)*sp;
+   const cc=q%3===0?col2:col;
+   this.p[j]=x;this.p[j+1]=y;this.p[j+2]=z;this.v[j]=vx;this.v[j+1]=vy;this.v[j+2]=vz;
+   this.bc[j]=this.c[j]=cc.r;this.bc[j+1]=this.c[j+1]=cc.g;this.bc[j+2]=this.c[j+2]=cc.b;
+   this.t[k]=this.lt[k]=rnd(1.05,1.85);
+  }
+  this.active=1;
+ }
+ clear(){this.p.fill(-9999);this.t.fill(0);this.active=0;this.m.geometry.attributes.position.needsUpdate=true}
+ step(dt){
+  if(!this.active)return;let alive=0;const drag=Math.exp(-dt*1.35);
+  for(let k=0;k<this.n;k++){
+   if(this.t[k]<=0)continue;
+   this.t[k]-=dt;const j=k*3;
+   if(this.t[k]<=0){this.p[j+1]=-9999;continue}
+   alive++;
+   this.v[j]*=drag;this.v[j+1]=this.v[j+1]*drag-46*dt;this.v[j+2]*=drag;
+   this.p[j]+=this.v[j]*dt;this.p[j+1]+=this.v[j+1]*dt;this.p[j+2]+=this.v[j+2]*dt;
+   const life=clamp(this.t[k]/Math.max(.1,this.lt[k]),0,1),tw=life<.35?(.55+.45*Math.sin(this.t[k]*48+k)):1,fade=life*tw;
+   this.c[j]=this.bc[j]*fade;this.c[j+1]=this.bc[j+1]*fade;this.c[j+2]=this.bc[j+2]*fade;
+  }
+  this.m.geometry.attributes.position.needsUpdate=true;
+  this.m.geometry.attributes.color.needsUpdate=true;
+  if(!alive)this.active=0;
+ }
+}
+
+// Sculpted faceted rocky mountain peak geometry (replaces smooth placeholder spheres/cones)
+function mkMountainGeo(){
+ const g=new THREE.ConeGeometry(1,1,11,4,false),p=g.attributes.position;
+ for(let i=0;i<p.count;i++){
+  const x=p.getX(i),y=p.getY(i),z=p.getZ(i),h=y+.5;
+  if(h>.02&&h<.98){
+   const ang=Math.atan2(z,x),ridge=1+.18*Math.sin(ang*3.0+h*4.2)+.11*Math.cos(ang*5.0-h*2.5);
+   p.setX(i,x*ridge);p.setZ(i,z*ridge);
+  }
+ }
+ g.computeVertexNormals();return g;
+}
 
